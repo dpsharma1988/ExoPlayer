@@ -221,7 +221,7 @@ public abstract class SegmentDownloader<M extends FilterableManifest<M, K>, K>
     ListIterator<Segment> segmentListIterator = segments.listIterator();
     while (segmentListIterator.hasNext()){
       Segment segment = segmentListIterator.next();
-      if(segment.dataSpec.uri.toString().contains(".key")){
+      if(segment.dataSpec.uri.toString().contains("custom://") || segment.dataSpec.uri.toString().contains(".key")){
         segmentListIterator.remove();
         break;
       }

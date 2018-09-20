@@ -112,6 +112,15 @@ public final class HlsMediaPlaylist extends HlsPlaylist {
       this.durationUs = durationUs;
       this.relativeDiscontinuitySequence = relativeDiscontinuitySequence;
       this.relativeStartTimeUs = relativeStartTimeUs;
+      /**
+       * Hisham : In every prog_index file, we have replaced the key path with custom:// prefix so that
+       * iOS can get the event in their callbacks for playing file in offline mode.
+       * On Android we have to replace that url prefix with http or https. Doing the same below.
+       */
+//      if(fullSegmentEncryptionKeyUri.contains("custom://")) {
+////        fullSegmentEncryptionKeyUri = fullSegmentEncryptionKeyUri.replace("custom://", "http://");
+//        fullSegmentEncryptionKeyUri = fullSegmentEncryptionKeyUri.replace("custom://", "https://vocatest-a40ab.firebaseapp.com/enc.key");
+//      }
       this.fullSegmentEncryptionKeyUri = fullSegmentEncryptionKeyUri;
       this.encryptionIV = encryptionIV;
       this.byterangeOffset = byterangeOffset;

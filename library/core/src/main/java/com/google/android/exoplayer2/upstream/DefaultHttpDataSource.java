@@ -189,7 +189,7 @@ public class DefaultHttpDataSource implements HttpDataSource {
     this.bytesRead = 0;
     this.bytesSkipped = 0;
     try {
-      connection = makeConnection(dataSpec);
+      connection = makeConnection(dataSpec); // hisham - 3 it calls for m3u8 hit
     } catch (IOException e) {
       throw new HttpDataSourceException("Unable to connect to " + dataSpec.uri.toString(), e,
           dataSpec, HttpDataSourceException.TYPE_OPEN);
@@ -203,6 +203,14 @@ public class DefaultHttpDataSource implements HttpDataSource {
       throw new HttpDataSourceException("Unable to connect to " + dataSpec.uri.toString(), e,
           dataSpec, HttpDataSourceException.TYPE_OPEN);
     }
+
+    if(responseCode == 500 || responseCode == 404) { // for custom server hisham
+      try {
+        connection = makeConnectionCustom(new URL(dataSpec.uri.toString()));
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+    } else
 
     // Check for a valid response code.
     if (responseCode < 200 || responseCode > 299) {
@@ -259,6 +267,29 @@ public class DefaultHttpDataSource implements HttpDataSource {
 
     return bytesToRead;
   }
+
+
+  private HttpURLConnection makeConnectionCustom(URL url) throws IOException {
+    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+    connection.setConnectTimeout(connectTimeoutMillis);
+    connection.setReadTimeout(readTimeoutMillis);
+    if (defaultRequestProperties != null) {
+      for (Map.Entry<String, String> property : defaultRequestProperties.getSnapshot().entrySet()) {
+        connection.setRequestProperty(property.getKey(), property.getValue());
+      }
+    }
+    for (Map.Entry<String, String> property : requestProperties.getSnapshot().entrySet()) {
+      connection.setRequestProperty(property.getKey(), property.getValue());
+    }
+    connection.setRequestProperty("User-Agent", userAgent);
+    connection.setRequestMethod("GET");
+//    if(!TextUtils.isEmpty(TokenManager.getToken())) {
+//      connection.setRequestProperty("token", TokenManager.getToken());
+//    }
+    Log.d(TAG, "hisham: " + connection.getResponseCode());
+    return connection;
+  }
+
 
   @Override
   public int read(byte[] buffer, int offset, int readLength) throws HttpDataSourceException {
