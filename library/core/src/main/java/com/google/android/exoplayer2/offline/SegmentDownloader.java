@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -209,6 +210,23 @@ public abstract class SegmentDownloader<M extends FilterableManifest<M, K>, K>
       manifest = manifest.copy(streamKeys);
     }
     List<Segment> segments = getSegments(dataSource, manifest, /* allowIncompleteList= */ false);
+
+    /**
+     * Changes made by Hisham
+     * TODO - This logic needs to be updated as its a trivial fix for now
+     * We are finding out if the segment list contain a ".key" in uri and removing it
+     * so that we can skip key download as we need to do it our self at some point.
+     */
+
+    ListIterator<Segment> segmentListIterator = segments.listIterator();
+    while (segmentListIterator.hasNext()){
+      Segment segment = segmentListIterator.next();
+      if(segment.dataSpec.uri.toString().contains(".key")){
+        segmentListIterator.remove();
+        break;
+      }
+    }
+
     CachingCounters cachingCounters = new CachingCounters();
     totalSegments = segments.size();
     downloadedSegments = 0;
