@@ -21,6 +21,10 @@
       {
         "name": "Encrypted Custom",
         "uri": "https://vocatest-a40ab.firebaseapp.com/encrypted_android_no_key/prog_index.m3u8"
+      },
+      {
+        "name": "Encrypted Custom Small",
+        "uri": "https://vocatest-a40ab.firebaseapp.com/small_files/encrypted_without_key/index.m3u8"
       }
     ]
   }

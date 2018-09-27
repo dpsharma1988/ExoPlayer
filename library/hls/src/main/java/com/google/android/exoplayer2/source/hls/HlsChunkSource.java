@@ -32,6 +32,7 @@ import com.google.android.exoplayer2.trackselection.BaseTrackSelection;
 import com.google.android.exoplayer2.trackselection.TrackSelection;
 import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DataSpec;
+import com.google.android.exoplayer2.upstream.vocabimate_stream.AesEncryptionUtil;
 import com.google.android.exoplayer2.util.TimestampAdjuster;
 import com.google.android.exoplayer2.util.UriUtil;
 import com.google.android.exoplayer2.util.Util;
@@ -376,6 +377,15 @@ import java.util.List;
   public void onChunkLoadCompleted(Chunk chunk) {
     if (chunk instanceof EncryptionKeyChunk) {
       EncryptionKeyChunk encryptionKeyChunk = (EncryptionKeyChunk) chunk;
+
+      /**
+       * Here it loads the decryption key, which we should have already encrypted using our AesEncryptionUtil, so we need
+       * to decrypt it first. See {@Link DefaultHttpDataSource#readInternal() Line: 616} for more details.
+       */
+      if(chunk.dataSpec != null && chunk.dataSpec.uri != null && chunk.dataSpec.uri.toString().contains(".key")) { // hisham - decrypting key here
+          encryptionKeyChunk.result = AesEncryptionUtil.decrypt("Bar12345Bar12345", "pppppppppppppppp",encryptionKeyChunk.getResult());
+      }
+
       scratchSpace = encryptionKeyChunk.getDataHolder();
       setEncryptionData(encryptionKeyChunk.dataSpec.uri, encryptionKeyChunk.iv,
           encryptionKeyChunk.getResult());

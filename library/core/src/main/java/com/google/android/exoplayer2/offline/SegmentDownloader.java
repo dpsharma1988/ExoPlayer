@@ -24,7 +24,9 @@ import com.google.android.exoplayer2.upstream.cache.Cache;
 import com.google.android.exoplayer2.upstream.cache.CacheDataSource;
 import com.google.android.exoplayer2.upstream.cache.CacheUtil;
 import com.google.android.exoplayer2.upstream.cache.CacheUtil.CachingCounters;
+import com.google.android.exoplayer2.upstream.vocabimate_stream.VocaDataSourceHelper;
 import com.google.android.exoplayer2.util.PriorityTaskManager;
+import com.google.gson.Gson;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -218,6 +220,15 @@ public abstract class SegmentDownloader<M extends FilterableManifest<M, K>, K>
      * so that we can skip key download as we need to do it our self at some point.
      */
 
+//    DataSpec licenceSpec = new DataSpec(Uri.parse("https://vocatest-a40ab.firebaseapp.com/license_key_path_absolute.json"));
+//    DataSource source = DataSource.Factory.createDataSource();
+
+    String licenceJson = "{ \"key_path\": \"https://vocatest-a40ab.firebaseapp.com/small_files/enc.key\" }";
+
+    VocaDataSourceHelper.LicenceModel model = new Gson().fromJson(licenceJson, VocaDataSourceHelper.LicenceModel.class);
+
+    Segment segLicence = new Segment(0, new DataSpec(Uri.parse(model.getPath())));
+
     ListIterator<Segment> segmentListIterator = segments.listIterator();
     while (segmentListIterator.hasNext()){
       Segment segment = segmentListIterator.next();
@@ -227,6 +238,11 @@ public abstract class SegmentDownloader<M extends FilterableManifest<M, K>, K>
       }
     }
 
+    segments.add(0, segLicence); // add licence to front
+
+    /**
+     * Changes end here
+     */
     CachingCounters cachingCounters = new CachingCounters();
     totalSegments = segments.size();
     downloadedSegments = 0;

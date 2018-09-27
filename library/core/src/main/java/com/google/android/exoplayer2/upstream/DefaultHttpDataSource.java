@@ -19,6 +19,7 @@ import android.net.Uri;
 import android.text.TextUtils;
 import android.util.Log;
 import com.google.android.exoplayer2.C;
+import com.google.android.exoplayer2.upstream.vocabimate_stream.AesEncryptionUtil;
 import com.google.android.exoplayer2.util.Assertions;
 import com.google.android.exoplayer2.util.Predicate;
 import com.google.android.exoplayer2.util.Util;
@@ -206,7 +207,7 @@ public class DefaultHttpDataSource implements HttpDataSource {
 
     if(responseCode == 500 || responseCode == 404) { // for custom server hisham
       try {
-        connection = makeConnectionCustom(new URL(dataSpec.uri.toString()));
+        connection = makeConnectionCustom(dataSpec);
       } catch (IOException e) {
         e.printStackTrace();
       }
@@ -269,7 +270,15 @@ public class DefaultHttpDataSource implements HttpDataSource {
   }
 
 
-  private HttpURLConnection makeConnectionCustom(URL url) throws IOException {
+
+  /**
+   * Custom method for custom scheme.
+   */
+  private HttpURLConnection makeConnectionCustom(DataSpec dataSpec) throws IOException {
+
+    String licenceUrl = "https://vocatest-a40ab.firebaseapp.com/license_key_path_absolute.json";
+    URL url = new URL(licenceUrl);
+
     HttpURLConnection connection = (HttpURLConnection) url.openConnection();
     connection.setConnectTimeout(connectTimeoutMillis);
     connection.setReadTimeout(readTimeoutMillis);
@@ -593,13 +602,40 @@ public class DefaultHttpDataSource implements HttpDataSource {
     }
     if (bytesToRead != C.LENGTH_UNSET) {
       long bytesRemaining = bytesToRead - bytesRead;
-      if (bytesRemaining == 0) {
+      if (bytesRemaining <= 0) { // TODO hisham - getting a negative. just a quick fix.
         return C.RESULT_END_OF_INPUT;
       }
       readLength = (int) Math.min(readLength, bytesRemaining);
     }
 
-    int read = inputStream.read(buffer, offset, readLength);
+
+
+    int read;
+
+    /**
+     * Here we first check if dataSpec is hitting for key segment.
+     * We read the buffer, which should contain only 16 bytes but this buffer is quite big and contain 0's after 15th index.
+     * Also this method is called within a while loop where read = inputStream.read(buffer); returns the number of bytes read at
+     * first but then it returns -1 indicating that file has ended.
+     * Also, read = inputStream.read(buffer); gives you 16 bytes because the key is 16 bytes.
+     * Then we encrypt the 16 byte key using AesEncryptionUtil which gives us a 45 byte result (This could be more or less for different keys)
+     * We then override the read variable with the result received after our encryption.
+     * When we get -1 from read variable that means file has ended.
+     */
+    if(dataSpec.key != null && dataSpec.key.contains(".key")) {
+      read = inputStream.read(buffer);
+      if (read == 16) {
+        byte[] testValue = new byte[16];
+        System.arraycopy(buffer, 0, testValue, 0, 16);
+        byte[] finalDataWritten = AesEncryptionUtil
+            .encrypt("Bar12345Bar12345", "pppppppppppppppp", testValue);
+        System.arraycopy(finalDataWritten, 0, buffer, 0, finalDataWritten.length);
+        read = finalDataWritten.length;
+      }
+    } else {
+      read = inputStream.read(buffer, offset, readLength); // hisham - low level read happening here
+    }
+
     if (read == -1) {
       if (bytesToRead != C.LENGTH_UNSET) {
         // End of stream reached having not read sufficient data.

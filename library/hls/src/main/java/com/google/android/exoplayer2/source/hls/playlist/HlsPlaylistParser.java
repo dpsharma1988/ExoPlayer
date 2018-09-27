@@ -416,7 +416,7 @@ public final class HlsPlaylistParser implements ParsingLoadable.Parser<HlsPlayli
           if (KEYFORMAT_IDENTITY.equals(keyFormat) || keyFormat == null) {
             if (METHOD_AES_128.equals(method)) {
               // The segment is fully encrypted using an identity key.
-              encryptionKeyUri = parseStringAttr(line, REGEX_URI);
+              encryptionKeyUri = parseStringAttr(line, REGEX_URI); // hisham - reading the key line in m3u8
             } else {
               // Do nothing. Samples are encrypted using an identity key, but this is not supported.
               // Hopefully, a traditional DRM alternative is also provided.
@@ -544,7 +544,21 @@ public final class HlsPlaylistParser implements ParsingLoadable.Parser<HlsPlayli
     return matcher.find() ? matcher.group(1) : null;
   }
 
+
+  /**
+   * Intercepting the parsing of m3u8 file
+   */
   private static String parseStringAttr(String line, Pattern pattern) throws ParserException {
+
+    if(line != null && line.contains("custom://")){
+      String licenceJson = "{ \"key_path\": \"https://vocatest-a40ab.firebaseapp.com/enc.key\" }";
+
+//      VocaDataSourceHelper.LicenceModel model = new Gson().fromJson(licenceJson, VocaDataSourceHelper.LicenceModel.class);
+
+      return "https://vocatest-a40ab.firebaseapp.com/small_files/enc.key";
+
+    }
+
     Matcher matcher = pattern.matcher(line);
     if (matcher.find() && matcher.groupCount() == 1) {
       return matcher.group(1);

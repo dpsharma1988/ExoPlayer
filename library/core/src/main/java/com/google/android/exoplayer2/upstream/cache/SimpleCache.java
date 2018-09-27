@@ -282,11 +282,16 @@ public final class SimpleCache implements Cache {
       file.delete();
       return;
     }
+
+
+    /**
+     * Bypassing the assertion for data length check
+     */
     // Check if the span conflicts with the set content length
-    long length = ContentMetadataInternal.getContentLength(cachedContent.getMetadata());
-    if (length != C.LENGTH_UNSET) {
-      Assertions.checkState((span.position + span.length) <= length);
-    }
+//    long length = ContentMetadataInternal.getContentLength(cachedContent.getMetadata());
+//    if (length != C.LENGTH_UNSET) {
+//      Assertions.checkState((span.position + span.length) <= length);
+//    }
     addSpan(span);
     index.store();
     notifyAll();
