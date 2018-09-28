@@ -550,14 +550,14 @@ public final class HlsPlaylistParser implements ParsingLoadable.Parser<HlsPlayli
    */
   private static String parseStringAttr(String line, Pattern pattern) throws ParserException {
 
-    if(line != null && line.contains("custom://")){
-      String licenceJson = "{ \"key_path\": \"https://vocatest-a40ab.firebaseapp.com/enc.key\" }";
-
-//      VocaDataSourceHelper.LicenceModel model = new Gson().fromJson(licenceJson, VocaDataSourceHelper.LicenceModel.class);
-
-      return "https://vocatest-a40ab.firebaseapp.com/small_files/enc.key";
-
-    }
+//    if(line != null && line.contains("custom://")){
+//      String licenceJson = "{ \"key_path\": \"https://vocatest-a40ab.firebaseapp.com/enc.key\" }";
+//
+////      VocaDataSourceHelper.LicenceModel model = new Gson().fromJson(licenceJson, VocaDataSourceHelper.LicenceModel.class);
+//
+//      return "https://vocatest-a40ab.firebaseapp.com/small_files/enc.key";
+//
+//    }
 
     Matcher matcher = pattern.matcher(line);
     if (matcher.find() && matcher.groupCount() == 1) {

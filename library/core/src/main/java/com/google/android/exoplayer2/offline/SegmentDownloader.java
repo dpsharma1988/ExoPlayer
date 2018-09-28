@@ -43,6 +43,40 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public abstract class SegmentDownloader<M extends FilterableManifest<M, K>, K>
     implements Downloader {
 
+  private VocaDataSourceHelper.LicenceModel licenceModel;
+  private Thread currentThread;
+  // A network thread to get the details of licence file
+  Thread lecenceThread = new Thread(new Runnable() {
+    @Override
+    public void run() {
+// TODO Network API Hit
+      LicenceObtainer licenceObtainer = new LicenceObtainer(800, new LicenceObtainer.ILicenceData() {
+        @Override
+        public void onLicenceReceived(VocaDataSourceHelper.LicenceModel model) {
+          // TODO Handle licence model and get the key_path from the same.
+          licenceModel = model;
+          try{
+            synchronized (currentThread) {
+              currentThread.notify();
+            }
+          }
+          catch (Exception e)
+          {
+            e.printStackTrace();
+          }
+//          notifyAll();
+        }
+      });
+
+      try {
+        licenceObtainer.getLicence();
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+    }
+  });
+
+
   /** Smallest unit of content to be downloaded. */
   protected static class Segment implements Comparable<Segment> {
     /** The start time of the segment in microseconds. */
@@ -223,9 +257,16 @@ public abstract class SegmentDownloader<M extends FilterableManifest<M, K>, K>
 //    DataSpec licenceSpec = new DataSpec(Uri.parse("https://vocatest-a40ab.firebaseapp.com/license_key_path_absolute.json"));
 //    DataSource source = DataSource.Factory.createDataSource();
 
-    String licenceJson = "{ \"key_path\": \"https://vocatest-a40ab.firebaseapp.com/small_files/enc.key\" }";
+    // TODO Get the licence details via network API
+    currentThread = Thread.currentThread();
+    lecenceThread.start();
+    synchronized (currentThread) {
+      currentThread.wait();
+    }
 
-    VocaDataSourceHelper.LicenceModel model = new Gson().fromJson(licenceJson, VocaDataSourceHelper.LicenceModel.class);
+//    String licenceJson = "{ \"key_path\": \"https://vocatest-a40ab.firebaseapp.com/small_files/enc.key\" }";
+
+    VocaDataSourceHelper.LicenceModel model = licenceModel;
 
     Segment segLicence = new Segment(0, new DataSpec(Uri.parse(model.getPath())));
 
