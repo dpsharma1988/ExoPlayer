@@ -419,9 +419,9 @@ public final class HlsPlaylistParser implements ParsingLoadable.Parser<HlsPlayli
               encryptionKeyUri = parseStringAttr(line, REGEX_URI); // hisham - reading the key line in m3u8
               //28-09-2018 for custom offline play back
               //it will change in future
-               if(encryptionKeyUri.contains("vcb://")){
-                encryptionKeyUri = encryptionKeyUri.replace("vcb://vocatest-a40ab.firebaseapp.com","https://voca2hosting.firebaseapp.com");
-              }
+//               if(encryptionKeyUri.contains("vcb://")){
+//                encryptionKeyUri = encryptionKeyUri.replace("vcb://vocatest-a40ab.firebaseapp.com","https://voca2hosting.firebaseapp.com");
+//              }
             } else {
               // Do nothing. Samples are encrypted using an identity key, but this is not supported.
               // Hopefully, a traditional DRM alternative is also provided.

@@ -20,16 +20,22 @@ import android.text.TextUtils;
 import android.util.Log;
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.upstream.vocabimate_stream.AesEncryptionUtil;
+import com.google.android.exoplayer2.upstream.vocabimate_stream.VocaDataSourceHelper;
 import com.google.android.exoplayer2.util.Assertions;
 import com.google.android.exoplayer2.util.Predicate;
 import com.google.android.exoplayer2.util.Util;
+import com.google.android.exoplayer2.vocab.CredUpdateSingleton;
+import com.google.gson.Gson;
+import java.io.BufferedReader;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.InterruptedIOException;
 import java.io.OutputStream;
 import java.lang.reflect.Method;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.NoRouteToHostException;
 import java.net.ProtocolException;
 import java.net.URL;
@@ -185,12 +191,12 @@ public class DefaultHttpDataSource implements HttpDataSource {
   }
 
   @Override
-  public long open(DataSpec dataSpec) throws HttpDataSourceException {
+  public long open(DataSpec dataSpec) throws HttpDataSourceException { // Note: This method is not called in offline case. -Hisham
     this.dataSpec = dataSpec;
     this.bytesRead = 0;
     this.bytesSkipped = 0;
     try {
-      connection = makeConnection(dataSpec); // hisham - 3 it calls for m3u8 hit
+        connection = makeConnection(dataSpec);
     } catch (IOException e) {
       throw new HttpDataSourceException("Unable to connect to " + dataSpec.uri.toString(), e,
           dataSpec, HttpDataSourceException.TYPE_OPEN);
@@ -204,14 +210,6 @@ public class DefaultHttpDataSource implements HttpDataSource {
       throw new HttpDataSourceException("Unable to connect to " + dataSpec.uri.toString(), e,
           dataSpec, HttpDataSourceException.TYPE_OPEN);
     }
-
-    if(responseCode == 500 || responseCode == 404) { // for custom server hisham
-      try {
-        connection = makeConnectionCustom(dataSpec);
-      } catch (IOException e) {
-        e.printStackTrace();
-      }
-    } else
 
     // Check for a valid response code.
     if (responseCode < 200 || responseCode > 299) {
@@ -276,27 +274,89 @@ public class DefaultHttpDataSource implements HttpDataSource {
    */
   private HttpURLConnection makeConnectionCustom(DataSpec dataSpec) throws IOException {
 
-    String licenceUrl = "https://vocatest-a40ab.firebaseapp.com/license_key_path_absolute.json";
+    String videoId = CredUpdateSingleton.getInstance().getVideoIdAndResetIt();
+    if(videoId == null){
+      throw new NullPointerException("Video id is not set, call: CredUpdateSingleton.getInstance().setVideoId(int);");
+    }
+
+    URL keyUrl = null;
+
+    String licenceUrl = "https://voca2hosting.firebaseapp.com/small_files/license_key_path_absolute.json";
     URL url = new URL(licenceUrl);
 
-    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-    connection.setConnectTimeout(connectTimeoutMillis);
-    connection.setReadTimeout(readTimeoutMillis);
-    if (defaultRequestProperties != null) {
-      for (Map.Entry<String, String> property : defaultRequestProperties.getSnapshot().entrySet()) {
-        connection.setRequestProperty(property.getKey(), property.getValue());
+    // parse licence
+    HttpURLConnection httpURLConnection = null;
+    try {
+      httpURLConnection = (HttpURLConnection) url
+          .openConnection();
+
+      InputStream in = httpURLConnection.getInputStream();
+      String result = readStream(in);
+      VocaDataSourceHelper.LicenceModel licenceModel = new Gson().fromJson(result, VocaDataSourceHelper.LicenceModel.class);
+      if(licenceModel != null){
+        keyUrl = new URL(licenceModel.getPath());
+      }
+
+            /*InputStreamReader isw = new InputStreamReader(in);
+            int data = isw.read();
+            while (data != -1) {
+                char current = (char) data;
+                data = isw.read();
+                System.out.print(current);
+            }*/
+    } catch (Exception e) {
+      e.printStackTrace();
+    } finally {
+      if (httpURLConnection != null) {
+        httpURLConnection.disconnect();
       }
     }
-    for (Map.Entry<String, String> property : requestProperties.getSnapshot().entrySet()) {
-      connection.setRequestProperty(property.getKey(), property.getValue());
-    }
-    connection.setRequestProperty("User-Agent", userAgent);
-    connection.setRequestMethod("GET");
+
+    HttpURLConnection connection = null;
+    if (keyUrl != null) {
+      connection = (HttpURLConnection) keyUrl.openConnection();
+      connection.setConnectTimeout(connectTimeoutMillis);
+      connection.setReadTimeout(readTimeoutMillis);
+      if (defaultRequestProperties != null) {
+        for (Map.Entry<String, String> property : defaultRequestProperties.getSnapshot()
+            .entrySet()) {
+          connection.setRequestProperty(property.getKey(), property.getValue());
+        }
+      }
+      for (Map.Entry<String, String> property : requestProperties.getSnapshot().entrySet()) {
+        connection.setRequestProperty(property.getKey(), property.getValue());
+      }
+      connection.setRequestProperty("User-Agent", userAgent);
+      connection.setRequestMethod("GET");
 //    if(!TextUtils.isEmpty(TokenManager.getToken())) {
 //      connection.setRequestProperty("token", TokenManager.getToken());
 //    }
-    Log.d(TAG, "hisham: " + connection.getResponseCode());
+      Log.d(TAG, "hisham: " + connection.getResponseCode());
+    }
     return connection;
+  }
+
+  private String readStream(InputStream in) {
+    BufferedReader reader = null;
+    StringBuffer response = new StringBuffer();
+    try {
+      reader = new BufferedReader(new InputStreamReader(in));
+      String line = "";
+      while ((line = reader.readLine()) != null) {
+        response.append(line);
+      }
+    } catch (IOException e) {
+      e.printStackTrace();
+    } finally {
+      if (reader != null) {
+        try {
+          reader.close();
+        } catch (IOException e) {
+          e.printStackTrace();
+        }
+      }
+    }
+    return response.toString();
   }
 
 
@@ -378,7 +438,15 @@ public class DefaultHttpDataSource implements HttpDataSource {
    * Establishes a connection, following redirects to do so where permitted.
    */
   private HttpURLConnection makeConnection(DataSpec dataSpec) throws IOException {
-    URL url = new URL(dataSpec.uri.toString());
+      URL url = null;
+    try {
+      url = new URL(dataSpec.uri.toString());
+    } catch (MalformedURLException e) {
+      if (e.getMessage().contains("vcb")) {
+        connection = makeConnectionCustom(dataSpec);
+        return connection;
+      }
+    }
     byte[] postBody = dataSpec.postBody;
     long position = dataSpec.position;
     long length = dataSpec.length;

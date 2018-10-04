@@ -41,6 +41,7 @@ import com.google.android.exoplayer2.upstream.DataSpec;
 import com.google.android.exoplayer2.upstream.DefaultDataSource;
 import com.google.android.exoplayer2.util.Assertions;
 import com.google.android.exoplayer2.util.Util;
+import com.google.android.exoplayer2.vocab.CredUpdateSingleton;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -134,6 +135,7 @@ public class SampleChooserActivity extends Activity
   @Override
   public boolean onChildClick(
       ExpandableListView parent, View view, int groupPosition, int childPosition, long id) {
+    CredUpdateSingleton.getInstance().setVideoId("5");
     Sample sample = (Sample) view.getTag();
     startActivity(sample.buildIntent(this));
     return true;
@@ -424,6 +426,7 @@ public class SampleChooserActivity extends Activity
 
     @Override
     public void onClick(View view) {
+      CredUpdateSingleton.getInstance().setVideoId("5");
       onSampleDownloadButtonClicked((Sample) view.getTag());
     }
 

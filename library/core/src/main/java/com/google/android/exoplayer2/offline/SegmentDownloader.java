@@ -43,38 +43,38 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public abstract class SegmentDownloader<M extends FilterableManifest<M, K>, K>
     implements Downloader {
 
-  private VocaDataSourceHelper.LicenceModel licenceModel;
-  private Thread currentThread;
-  // A network thread to get the details of licence file
-  Thread lecenceThread = new Thread(new Runnable() {
-    @Override
-    public void run() {
-// TODO Network API Hit
-      LicenceObtainer licenceObtainer = new LicenceObtainer(800, new LicenceObtainer.ILicenceData() {
-        @Override
-        public void onLicenceReceived(VocaDataSourceHelper.LicenceModel model) {
-          // TODO Handle licence model and get the key_path from the same.
-          licenceModel = model;
-          try{
-            synchronized (currentThread) {
-              currentThread.notify();
-            }
-          }
-          catch (Exception e)
-          {
-            e.printStackTrace();
-          }
-//          notifyAll();
-        }
-      });
-
-      try {
-        licenceObtainer.getLicence();
-      } catch (IOException e) {
-        e.printStackTrace();
-      }
-    }
-  });
+//  private VocaDataSourceHelper.LicenceModel licenceModel;
+//  private Thread currentThread;
+//  // A network thread to get the details of licence file
+//  Thread lecenceThread = new Thread(new Runnable() {
+//    @Override
+//    public void run() {
+//// TODO Network API Hit
+//      LicenceObtainer licenceObtainer = new LicenceObtainer(800, new LicenceObtainer.ILicenceData() {
+//        @Override
+//        public void onLicenceReceived(VocaDataSourceHelper.LicenceModel model) {
+//          // TODO Handle licence model and get the key_path from the same.
+//          licenceModel = model;
+//          try{
+//            synchronized (currentThread) {
+//              currentThread.notify();
+//            }
+//          }
+//          catch (Exception e)
+//          {
+//            e.printStackTrace();
+//          }
+////          notifyAll();
+//        }
+//      });
+//
+//      try {
+//        licenceObtainer.getLicence();
+//      } catch (IOException e) {
+//        e.printStackTrace();
+//      }
+//    }
+//  });
 
 
   /** Smallest unit of content to be downloaded. */
@@ -258,28 +258,28 @@ public abstract class SegmentDownloader<M extends FilterableManifest<M, K>, K>
 //    DataSource source = DataSource.Factory.createDataSource();
 
     // TODO Get the licence details via network API
-    currentThread = Thread.currentThread();
-    lecenceThread.start();
-    synchronized (currentThread) {
-      currentThread.wait();
-    }
+//    currentThread = Thread.currentThread();
+//    lecenceThread.start();
+//    synchronized (currentThread) {
+//      currentThread.wait();
+//    }
 
 //    String licenceJson = "{ \"key_path\": \"https://vocatest-a40ab.firebaseapp.com/small_files/enc.key\" }";
 
-    VocaDataSourceHelper.LicenceModel model = licenceModel;
+//    VocaDataSourceHelper.LicenceModel model = licenceModel;
 
-    Segment segLicence = new Segment(0, new DataSpec(Uri.parse(model.getPath())));
-
-    ListIterator<Segment> segmentListIterator = segments.listIterator();
-    while (segmentListIterator.hasNext()){
-      Segment segment = segmentListIterator.next();
-      if(segment.dataSpec.uri.toString().contains("custom://") || segment.dataSpec.uri.toString().contains(".key")){
-        segmentListIterator.remove();
-        break;
-      }
-    }
-
-    segments.add(0, segLicence); // add licence to front
+//    Segment segLicence = new Segment(0, new DataSpec(Uri.parse(model.getPath())));
+//
+//    ListIterator<Segment> segmentListIterator = segments.listIterator();
+//    while (segmentListIterator.hasNext()){
+//      Segment segment = segmentListIterator.next();
+//      if(segment.dataSpec.uri.toString().contains("custom://") || segment.dataSpec.uri.toString().contains(".key")){
+//        segmentListIterator.remove();
+//        break;
+//      }
+//    }
+//
+//    segments.add(0, segLicence); // add licence to front
 
     /**
      * Changes end here
