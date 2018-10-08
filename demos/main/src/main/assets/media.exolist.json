@@ -25,6 +25,10 @@
       {
         "name": "Encrypted Custom Small",
         "uri":"http://54.152.186.92:60801/drm/static/sample/playlist.m3u8"
+      },
+      {
+        "name": "Inayat's Sample, Not Encrypted",
+        "uri":"http://54.152.186.92:60801/drm/static/sample/playlist.m3u8"
       }
     ]
   }
