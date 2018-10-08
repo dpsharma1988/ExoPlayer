@@ -24,7 +24,7 @@
       },
       {
         "name": "Encrypted Custom Small",
-        "uri": "https://voca2hosting.firebaseapp.com/small_files/encrypted_without_key/index.m3u8"
+        "uri":"http://54.152.186.92:60801/drm/static/sample/playlist.m3u8"
       }
     ]
   }

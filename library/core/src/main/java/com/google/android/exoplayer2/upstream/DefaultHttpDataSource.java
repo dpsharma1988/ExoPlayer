@@ -329,7 +329,7 @@ public class DefaultHttpDataSource implements HttpDataSource {
       connection.setRequestProperty("User-Agent", userAgent);
       connection.setRequestMethod("GET");
 //    if(!TextUtils.isEmpty(TokenManager.getToken())) {
-//      connection.setRequestProperty("token", TokenManager.getToken());
+      connection.setRequestProperty("access_token", "l8TmQpaBEdDGCtbefPfzTx54Bt4nOQLgaH8s3edJDhs=");
 //    }
       Log.d(TAG, "hisham: " + connection.getResponseCode());
     }
@@ -502,6 +502,7 @@ public class DefaultHttpDataSource implements HttpDataSource {
     connection.setConnectTimeout(connectTimeoutMillis);
     connection.setReadTimeout(readTimeoutMillis);
     if (defaultRequestProperties != null) {
+      defaultRequestProperties.set("access_token","l8TmQpaBEdDGCtbefPfzTx54Bt4nOQLgaH8s3edJDhs="); //TODO this is hardcoded we need to make it dynamic. 08-10-2018
       for (Map.Entry<String, String> property : defaultRequestProperties.getSnapshot().entrySet()) {
         connection.setRequestProperty(property.getKey(), property.getValue());
       }
