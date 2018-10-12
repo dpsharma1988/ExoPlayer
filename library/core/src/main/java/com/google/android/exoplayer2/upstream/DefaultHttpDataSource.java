@@ -20,11 +20,12 @@ import android.text.TextUtils;
 import android.util.Log;
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.upstream.vocabimate_stream.AesEncryptionUtil;
+import com.google.android.exoplayer2.upstream.vocabimate_stream.CustomDataSource;
 import com.google.android.exoplayer2.upstream.vocabimate_stream.VocaDataSourceHelper;
 import com.google.android.exoplayer2.util.Assertions;
 import com.google.android.exoplayer2.util.Predicate;
 import com.google.android.exoplayer2.util.Util;
-import com.google.android.exoplayer2.vocab.CredUpdateSingleton;
+import com.google.android.exoplayer2.vocab.KeyHelperModel;
 import com.google.gson.Gson;
 import java.io.BufferedReader;
 import java.io.EOFException;
@@ -90,8 +91,6 @@ public class DefaultHttpDataSource implements HttpDataSource {
 
   private long bytesSkipped;
   private long bytesRead;
-  private String ACCESS_TOKEN = "l8TmQpaBEdDGCtbefPfzTx54Bt4nOQLgaH8s3edJDhs=";
-
   /**
    * @param userAgent The User-Agent string that should be used.
    * @param contentTypePredicate An optional {@link Predicate}. If a content type is rejected by the
@@ -268,35 +267,42 @@ public class DefaultHttpDataSource implements HttpDataSource {
     return bytesToRead;
   }
 
-
-
   /**
    * Custom method for custom scheme.
    */
-  private HttpURLConnection makeConnectionCustom(DataSpec dataSpec) throws IOException {
+  private HttpURLConnection makeConnectionCustom() throws IOException {
 
-    String videoId = CredUpdateSingleton.getInstance().getVideoIdAndResetIt();
-    if(videoId == null){
-      throw new NullPointerException("Video id is not set, call: CredUpdateSingleton.getInstance().setVideoId(int);");
-    }
+    if (this instanceof CustomDataSource) {
+      KeyHelperModel keyHelper = ((CustomDataSource) this).getKeyHelperModel();
+      if (keyHelper != null) {
+        String token = keyHelper.getToken();
+        if(token != null && token.length() > 0) {
+          connection.setRequestProperty("access_token", token);
+        }
 
-    URL keyUrl = null;
+        String videoId = keyHelper.getVideoId(); // todo check this
+        if (videoId == null) {
+          throw new NullPointerException("Video id is not set.");
+        }
 
-    String licenceUrl = "https://voca2hosting.firebaseapp.com/small_files/license_key_path_absolute.json";
-    URL url = new URL(licenceUrl);
+        URL keyUrl = null;
+        if (keyHelper.getKeyPath() == null) {
+          String licenceUrl = keyHelper.getLicecnceUrl(); //"https://voca2hosting.firebaseapp.com/small_files/license_key_path_absolute.json";
+          URL url = new URL(licenceUrl);
 
-    // parse licence
-    HttpURLConnection httpURLConnection = null;
-    try {
-      httpURLConnection = (HttpURLConnection) url
-          .openConnection();
+          // parse licence
+          HttpURLConnection httpURLConnection = null;
+          try {
+            httpURLConnection = (HttpURLConnection) url
+                    .openConnection();
 
-      InputStream in = httpURLConnection.getInputStream();
-      String result = readStream(in);
-      VocaDataSourceHelper.LicenceModel licenceModel = new Gson().fromJson(result, VocaDataSourceHelper.LicenceModel.class);
-      if(licenceModel != null){
-        keyUrl = new URL(licenceModel.getPath());
-      }
+            InputStream in = httpURLConnection.getInputStream();
+            String result = readStream(in);
+            VocaDataSourceHelper.LicenceModel licenceModel = new Gson()
+                    .fromJson(result, VocaDataSourceHelper.LicenceModel.class);
+            if (licenceModel != null) {
+              keyUrl = new URL(licenceModel.getPath());
+            }
 
             /*InputStreamReader isw = new InputStreamReader(in);
             int data = isw.read();
@@ -305,34 +311,49 @@ public class DefaultHttpDataSource implements HttpDataSource {
                 data = isw.read();
                 System.out.print(current);
             }*/
-    } catch (Exception e) {
-      e.printStackTrace();
-    } finally {
-      if (httpURLConnection != null) {
-        httpURLConnection.disconnect();
-      }
-    }
-
-    HttpURLConnection connection = null;
-    if (keyUrl != null) {
-      connection = (HttpURLConnection) keyUrl.openConnection();
-      connection.setConnectTimeout(connectTimeoutMillis);
-      connection.setReadTimeout(readTimeoutMillis);
-      if (defaultRequestProperties != null) {
-        for (Map.Entry<String, String> property : defaultRequestProperties.getSnapshot()
-            .entrySet()) {
-          connection.setRequestProperty(property.getKey(), property.getValue());
+          } catch (Exception e) {
+            e.printStackTrace();
+          } finally {
+            if (httpURLConnection != null) {
+              httpURLConnection.disconnect();
+            }
+          }
+        } else {
+          keyUrl = new URL(keyHelper.getKeyPath());
         }
-      }
-      for (Map.Entry<String, String> property : requestProperties.getSnapshot().entrySet()) {
-        connection.setRequestProperty(property.getKey(), property.getValue());
-      }
-      connection.setRequestProperty("User-Agent", userAgent);
-      connection.setRequestMethod("GET");
+        HttpURLConnection connection = null;
+//    keyUrl = new URL("http://54.152.186.92:60801/static/sample/enc.key"); // temp
+        if (keyUrl != null) {
+          connection = (HttpURLConnection) keyUrl.openConnection();
+          connection.setConnectTimeout(connectTimeoutMillis);
+          connection.setReadTimeout(readTimeoutMillis);
+          if (defaultRequestProperties != null) {
+            for (Map.Entry<String, String> property : defaultRequestProperties.getSnapshot()
+                    .entrySet()) {
+              connection.setRequestProperty(property.getKey(), property.getValue());
+            }
+          }
+          for (Map.Entry<String, String> property : requestProperties.getSnapshot().entrySet()) {
+            connection.setRequestProperty(property.getKey(), property.getValue());
+          }
+          connection.setRequestProperty("User-Agent", userAgent);
+          connection.setRequestMethod("GET");
 //    if(!TextUtils.isEmpty(TokenManager.getToken())) {
-      connection.setRequestProperty("access_token", ACCESS_TOKEN); //TODO this is hardcoded we need to make it dynamic. 08-10-2018
+          if (this instanceof CustomDataSource) {
+            KeyHelperModel keyHelperModel = ((CustomDataSource) this).getKeyHelperModel();
+            if (keyHelperModel != null) {
+              String token2 = keyHelper.getToken();
+              if(token2 != null && token2.length() > 0) {
+                connection.setRequestProperty("access_token", token2);
+              }
+            }
+          }
+
 //    }
-      Log.d(TAG, "ResponseCode: " + connection.getResponseCode());
+          Log.d(TAG, "ResponseCode: " + connection.getResponseCode());
+        }
+        return connection;
+      }
     }
     return connection;
   }
@@ -444,7 +465,7 @@ public class DefaultHttpDataSource implements HttpDataSource {
       url = new URL(dataSpec.uri.toString());
     } catch (MalformedURLException e) {
       if (e.getMessage().contains("vcb")) {
-        connection = makeConnectionCustom(dataSpec);
+        connection = makeConnectionCustom();
         return connection;
       }
     }
@@ -503,7 +524,16 @@ public class DefaultHttpDataSource implements HttpDataSource {
     connection.setConnectTimeout(connectTimeoutMillis);
     connection.setReadTimeout(readTimeoutMillis);
     if (defaultRequestProperties != null) {
-      defaultRequestProperties.set("access_token", ACCESS_TOKEN); //TODO this is hardcoded we need to make it dynamic. 08-10-2018
+
+      if(this instanceof CustomDataSource){
+        KeyHelperModel keyHelperModel = ((CustomDataSource) this).getKeyHelperModel();
+        if(keyHelperModel != null) {
+          String token = keyHelperModel.getToken();
+          if(token != null && token.length() > 0) {
+            defaultRequestProperties.set("access_token", token);
+          }
+        }
+      }
       for (Map.Entry<String, String> property : defaultRequestProperties.getSnapshot().entrySet()) {
         connection.setRequestProperty(property.getKey(), property.getValue());
       }

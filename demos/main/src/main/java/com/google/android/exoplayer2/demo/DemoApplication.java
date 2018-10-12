@@ -25,7 +25,6 @@ import com.google.android.exoplayer2.source.hls.offline.HlsDownloadAction;
 import com.google.android.exoplayer2.source.smoothstreaming.offline.SsDownloadAction;
 import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
-import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
 import com.google.android.exoplayer2.upstream.FileDataSourceFactory;
 import com.google.android.exoplayer2.upstream.HttpDataSource;
 import com.google.android.exoplayer2.upstream.TransferListener;
@@ -34,7 +33,9 @@ import com.google.android.exoplayer2.upstream.cache.CacheDataSource;
 import com.google.android.exoplayer2.upstream.cache.CacheDataSourceFactory;
 import com.google.android.exoplayer2.upstream.cache.NoOpCacheEvictor;
 import com.google.android.exoplayer2.upstream.cache.SimpleCache;
+import com.google.android.exoplayer2.upstream.vocabimate_stream.CustomDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
+import com.google.android.exoplayer2.vocab.KeyHelperModel;
 import java.io.File;
 
 /**
@@ -68,16 +69,16 @@ public class DemoApplication extends Application {
   }
 
   /** Returns a {@link DataSource.Factory}. */
-  public DataSource.Factory buildDataSourceFactory(TransferListener<? super DataSource> listener) {
+  public DataSource.Factory buildDataSourceFactory(TransferListener<? super DataSource> listener, KeyHelperModel keyHelper) {
     DefaultDataSourceFactory upstreamFactory =
-        new DefaultDataSourceFactory(this, listener, buildHttpDataSourceFactory(listener));
+        new DefaultDataSourceFactory(this, listener, buildHttpDataSourceFactory(listener, keyHelper));
     return buildReadOnlyCacheDataSource(upstreamFactory, getDownloadCache());
   }
 
   /** Returns a {@link HttpDataSource.Factory}. */
-  public HttpDataSource.Factory buildHttpDataSourceFactory(
-      TransferListener<? super DataSource> listener) {
-    return new DefaultHttpDataSourceFactory(userAgent, listener);
+  public HttpDataSource.Factory buildHttpDataSourceFactory(TransferListener<? super DataSource> listener,
+      KeyHelperModel keyHelper) {
+    return new CustomDataSourceFactory(userAgent, listener, keyHelper);
   }
 
   /** Returns whether extension renderers should be used. */
@@ -86,20 +87,26 @@ public class DemoApplication extends Application {
   }
 
   public DownloadManager getDownloadManager() {
-    initDownloadManager();
+    initDownloadManager(null);
     return downloadManager;
   }
 
   public DownloadTracker getDownloadTracker() {
-    initDownloadManager();
+    initDownloadManager(null);
     return downloadTracker;
   }
 
-  private synchronized void initDownloadManager() {
+  public DownloadTracker getDownloadTracker(KeyHelperModel keyHelperModel){
+    initDownloadManager(keyHelperModel);
+    return downloadTracker;
+  }
+
+  private synchronized void initDownloadManager(
+      KeyHelperModel keyHelper) {
     if (downloadManager == null) {
       DownloaderConstructorHelper downloaderConstructorHelper =
           new DownloaderConstructorHelper(
-              getDownloadCache(), buildHttpDataSourceFactory(/* listener= */ null));
+              getDownloadCache(), buildHttpDataSourceFactory(/* listener= */ null, keyHelper)); // todo - should not be null
       downloadManager =
           new DownloadManager(
               downloaderConstructorHelper,
@@ -110,7 +117,7 @@ public class DemoApplication extends Application {
       downloadTracker =
           new DownloadTracker(
               /* context= */ this,
-              buildDataSourceFactory(/* listener= */ null),
+              buildDataSourceFactory(/* listener= */ null, keyHelper), // todo - should not be null,
               new File(getDownloadDirectory(), DOWNLOAD_TRACKER_ACTION_FILE),
               DOWNLOAD_DESERIALIZERS);
       downloadManager.addListener(downloadTracker);

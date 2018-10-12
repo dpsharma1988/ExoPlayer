@@ -83,6 +83,8 @@ import com.google.android.exoplayer2.upstream.HttpDataSource;
 import com.google.android.exoplayer2.util.ErrorMessageProvider;
 import com.google.android.exoplayer2.util.EventLogger;
 import com.google.android.exoplayer2.util.Util;
+import com.google.android.exoplayer2.vocab.KeyHelperModel;
+import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.net.CookieHandler;
 import java.net.CookieManager;
@@ -152,13 +154,21 @@ public class PlayerActivity extends Activity
   private AdsLoader adsLoader;
   private Uri loadedAdTagUri;
   private ViewGroup adUiViewGroup;
+//  private KeyHelperModel keyHelperModel;
 
   // Activity lifecycle
 
   @Override
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    mediaDataSourceFactory = buildDataSourceFactory(true);
+
+    Intent intent = getIntent();
+    if(intent.hasExtra("keyHelperModel")){
+      KeyHelperModel keyHelperModel = (KeyHelperModel) intent.getSerializableExtra("keyHelperModel");
+      mediaDataSourceFactory = buildDataSourceFactory(true, keyHelperModel);
+    } else {
+      throw new NullPointerException("keyHelperModel not found inside intent, forgot to call: intent.putExtra(\"keyHelperModel\", keyHelperModel);");
+    }
     if (CookieHandler.getDefault() != DEFAULT_COOKIE_MANAGER) {
       CookieHandler.setDefault(DEFAULT_COOKIE_MANAGER);
     }
@@ -442,22 +452,22 @@ public class PlayerActivity extends Activity
   private MediaSource buildMediaSource(Uri uri, @Nullable String overrideExtension) {
     @ContentType int type = Util.inferContentType(uri, overrideExtension);
     switch (type) {
-      case C.TYPE_DASH:
-        return new DashMediaSource.Factory(
-                new DefaultDashChunkSource.Factory(mediaDataSourceFactory),
-                buildDataSourceFactory(false))
-            .setManifestParser(
-                new FilteringManifestParser<>(
-                    new DashManifestParser(), (List<RepresentationKey>) getOfflineStreamKeys(uri)))
-            .createMediaSource(uri);
-      case C.TYPE_SS:
-        return new SsMediaSource.Factory(
-                new DefaultSsChunkSource.Factory(mediaDataSourceFactory),
-                buildDataSourceFactory(false))
-            .setManifestParser(
-                new FilteringManifestParser<>(
-                    new SsManifestParser(), (List<StreamKey>) getOfflineStreamKeys(uri)))
-            .createMediaSource(uri);
+//      case C.TYPE_DASH:
+//        return new DashMediaSource.Factory(
+//                new DefaultDashChunkSource.Factory(mediaDataSourceFactory),
+//                buildDataSourceFactory(false))
+//            .setManifestParser(
+//                new FilteringManifestParser<>(
+//                    new DashManifestParser(), (List<RepresentationKey>) getOfflineStreamKeys(uri)))
+//            .createMediaSource(uri);
+//      case C.TYPE_SS:
+//        return new SsMediaSource.Factory(
+//                new DefaultSsChunkSource.Factory(mediaDataSourceFactory),
+//                buildDataSourceFactory(false))
+//            .setManifestParser(
+//                new FilteringManifestParser<>(
+//                    new SsManifestParser(), (List<StreamKey>) getOfflineStreamKeys(uri)))
+//            .createMediaSource(uri);
       case C.TYPE_HLS:
         return new HlsMediaSource.Factory(mediaDataSourceFactory)
             .setPlaylistParser(
@@ -480,7 +490,7 @@ public class PlayerActivity extends Activity
       UUID uuid, String licenseUrl, String[] keyRequestPropertiesArray, boolean multiSession)
       throws UnsupportedDrmException {
     HttpDataSource.Factory licenseDataSourceFactory =
-        ((DemoApplication) getApplication()).buildHttpDataSourceFactory(/* listener= */ null);
+        ((DemoApplication) getApplication()).buildHttpDataSourceFactory(/* listener= */ null, null); // voca - drm not using as of now
     HttpMediaDrmCallback drmCallback =
         new HttpMediaDrmCallback(licenseUrl, licenseDataSourceFactory);
     if (keyRequestPropertiesArray != null) {
@@ -549,11 +559,12 @@ public class PlayerActivity extends Activity
    *
    * @param useBandwidthMeter Whether to set {@link #BANDWIDTH_METER} as a listener to the new
    *     DataSource factory.
+   * @param keyHelperModel
    * @return A new DataSource factory.
    */
-  private DataSource.Factory buildDataSourceFactory(boolean useBandwidthMeter) {
+  private DataSource.Factory buildDataSourceFactory(boolean useBandwidthMeter, KeyHelperModel keyHelperModel) {
     return ((DemoApplication) getApplication())
-        .buildDataSourceFactory(useBandwidthMeter ? BANDWIDTH_METER : null);
+        .buildDataSourceFactory(useBandwidthMeter ? BANDWIDTH_METER : null, keyHelperModel);
   }
 
   /** Returns an ads media source, reusing the ads loader if one exists. */

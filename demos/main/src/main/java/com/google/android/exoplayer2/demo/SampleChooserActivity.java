@@ -39,9 +39,10 @@ import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DataSourceInputStream;
 import com.google.android.exoplayer2.upstream.DataSpec;
 import com.google.android.exoplayer2.upstream.DefaultDataSource;
+import com.google.android.exoplayer2.upstream.TransferListener;
 import com.google.android.exoplayer2.util.Assertions;
 import com.google.android.exoplayer2.util.Util;
-import com.google.android.exoplayer2.vocab.CredUpdateSingleton;
+import com.google.android.exoplayer2.vocab.KeyHelperModel;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -133,12 +134,27 @@ public class SampleChooserActivity extends Activity
   }
 
   @Override
-  public boolean onChildClick(
-      ExpandableListView parent, View view, int groupPosition, int childPosition, long id) {
-    CredUpdateSingleton.getInstance().setVideoId("5");
+  public boolean onChildClick(ExpandableListView parent, View view, int groupPosition, int childPosition, long id) {
     Sample sample = (Sample) view.getTag();
-    startActivity(sample.buildIntent(this));
+    Intent intent = sample.buildIntent(this);
+
+    KeyHelperModel keyHelperModel = getKeyHelper(id, (UriSample) sample);
+    intent.putExtra("keyHelperModel", keyHelperModel);
+    startActivity(intent);
     return true;
+  }
+
+  public KeyHelperModel getKeyHelper(long videoId, UriSample sample) {
+    String key = null;
+    if(sample.uri.toString().contains("tutorial")){
+      key = "http://54.152.186.92:60801/drm/static/tutorial/tutorial.key";
+    } else if(sample.uri.toString().contains("sample")){
+      key = "http://54.152.186.92:60801/static/sample/enc.key";
+    }
+
+    return new KeyHelperModel().setVideoId("videoId: " + videoId)
+        .setKeyPath(key)
+        .setM3u8Path(sample.uri.toString());
   }
 
   private void onSampleDownloadButtonClicked(Sample sample) {
@@ -148,6 +164,8 @@ public class SampleChooserActivity extends Activity
           .show();
     } else {
       UriSample uriSample = (UriSample) sample;
+      KeyHelperModel keyHelper = getKeyHelper(5, uriSample);
+      downloadTracker = ((DemoApplication)getApplication()).getDownloadTracker(keyHelper);
       downloadTracker.toggleDownload(this, sample.name, uriSample.uri, uriSample.extension);
     }
   }
@@ -426,7 +444,6 @@ public class SampleChooserActivity extends Activity
 
     @Override
     public void onClick(View view) {
-      CredUpdateSingleton.getInstance().setVideoId("5");
       onSampleDownloadButtonClicked((Sample) view.getTag());
     }
 
