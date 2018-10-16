@@ -145,16 +145,33 @@ public class SampleChooserActivity extends Activity
   }
 
   public KeyHelperModel getKeyHelper(long videoId, UriSample sample) {
-    String key = null;
-    if(sample.uri.toString().contains("tutorial")){
-      key = "http://54.152.186.92:60801/drm/static/tutorial/tutorial.key";
-    } else if(sample.uri.toString().contains("sample")){
-      key = "http://54.152.186.92:60801/static/sample/enc.key";
+//    String key = null;
+//    if(sample.uri.toString().contains("tutorial")){
+//      key = "http://54.152.186.92:60801/drm/static/tutorial/tutorial.key";
+//    } else if(sample.uri.toString().contains("sample")){
+//      key = "http://54.152.186.92:60801/static/sample/enc.key";
+//    }
+
+//    keyHelperModel.setVideoId(String.valueOf(model.getVideoId()));
+//    keyHelperModel.setM3u8Path(RetroUtils.BASE_URL +"/drm/" + model.getM3u8Url());
+//    keyHelperModel.setToken("l8TmQpaBEdDGCtbefPfzTx54Bt4nOQLgaH8s3edJDhs=");
+//    keyHelperModel.setLicecnceUrl("http://54.152.186.92:60801/drm/get_key_for_a_video/20");
+
+//    return new KeyHelperModel().setVideoId("videoId: " + videoId)
+//        .setKeyPath(key)
+//        .setM3u8Path(sample.uri.toString());
+//
+    if(sample.uri.toString().contains("vid30")) {
+      return new KeyHelperModel().setVideoId("videoId: " + videoId)
+              .setM3u8Path("https://voca2hosting.firebaseapp.com/vid30/playlist.m3u8")
+              .setLicecnceUrl("https://voca2hosting.firebaseapp.com/vid30/licence")
+              .setToken("rmaC0c9VqdoDDCku3MsXLJw_LL2IM_62zw8lOwfJsLU=");
     }
 
     return new KeyHelperModel().setVideoId("videoId: " + videoId)
-        .setKeyPath(key)
-        .setM3u8Path(sample.uri.toString());
+        .setM3u8Path("http://54.152.186.92:60801/drm/static/video/inayat/sample_category/vid5/playlist.m3u8")
+        .setLicecnceUrl("http://54.152.186.92:60801/drm/get_key_for_a_video/20")
+        .setToken("l8TmQpaBEdDGCtbefPfzTx54Bt4nOQLgaH8s3edJDhs=");
   }
 
   private void onSampleDownloadButtonClicked(Sample sample) {

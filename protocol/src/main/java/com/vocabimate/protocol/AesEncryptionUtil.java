@@ -1,42 +1,48 @@
-package com.google.android.exoplayer2.upstream.vocabimate_stream;
+package com.vocabimate.protocol;
+
+import com.google.common.io.BaseEncoding;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
 public class AesEncryptionUtil {
-	public static byte[] encrypt(String key, String initVector, byte[] value) {
-		try {
-			IvParameterSpec iv = new IvParameterSpec(initVector.getBytes("UTF-8"));
-			SecretKeySpec skeySpec = new SecretKeySpec(key.getBytes("UTF-8"), "AES");
+    public static byte[] encrypt(String key, String initVector, byte[] value) {
+        try {
+            IvParameterSpec iv = new IvParameterSpec(initVector.getBytes("UTF-8"));
+            SecretKeySpec skeySpec = new SecretKeySpec(key.getBytes("UTF-8"), "AES");
 
-			Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING");
-			cipher.init(Cipher.ENCRYPT_MODE, skeySpec, iv);
+            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING");
+            cipher.init(Cipher.ENCRYPT_MODE, skeySpec, iv);
 
-			byte[] encrypted = cipher.doFinal(value);
+            byte[] encrypted = cipher.doFinal(value);
 //			System.out.println(encrypted);
-			String fileInString = new String(android.util.Base64.encode(encrypted, android.util.Base64.DEFAULT));
+//			String fileInString = new String(android.util.Base64.encode(encrypted, android.util.Base64.DEFAULT));
+//			String fileInString = Base64.getEncoder().encodeToString(encrypted);
 //      String fileInString = Base64.encodeBase64String(encrypted);
 //			System.out.println("encrypted string: " + fileInString);
-			byte[] fileInBytes = fileInString.getBytes();
+            String fileInString = BaseEncoding.base64().encode(encrypted);
+            byte[] fileInBytes = fileInString.getBytes();
 
-			return fileInBytes;
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
+            return fileInBytes;
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
 
-		return null;
-	}
+        return null;
+    }
 
-    public static  byte[] decrypt(String key, String initVector, byte[] encodedfileInBytes) {
+    public static byte[] decrypt(String key, String initVector, byte[] encodedfileInBytes) {
         try {
-        	String encodedfileInString=new String(encodedfileInBytes);
+            String encodedfileInString = new String(encodedfileInBytes);
             IvParameterSpec iv = new IvParameterSpec(initVector.getBytes("UTF-8"));
             SecretKeySpec skeySpec = new SecretKeySpec(key.getBytes("UTF-8"), "AES");
 
             Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING");
             cipher.init(Cipher.DECRYPT_MODE, skeySpec, iv);
-          byte[] decodeFileInBytes=  android.util.Base64.decode(encodedfileInString, android.util.Base64.DEFAULT);
+//          byte[] decodeFileInBytes =  android.util.Base64.decode(encodedfileInString, android.util.Base64.DEFAULT);
+//          byte[] decodeFileInBytes =  Base64.getDecoder().decode(encodedfileInString);// encodedfileInString.getBytes();
+            byte[] decodeFileInBytes = BaseEncoding.base64().decode(encodedfileInString);
             byte[] originalFile = cipher.doFinal(decodeFileInBytes);
 
             return originalFile;
@@ -46,8 +52,8 @@ public class AesEncryptionUtil {
 
         return null;
     }
-    
-    
+
+
 //  public static void main(String[] args) {
 //
 //	  File file = new File("D:\\crypt0.key");
@@ -98,7 +104,6 @@ public class AesEncryptionUtil {
 //
 //    System.out.println(new String(d));
 //}
-    
-    
-    
+
+
 }

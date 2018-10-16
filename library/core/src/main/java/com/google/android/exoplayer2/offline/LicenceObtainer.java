@@ -1,19 +1,15 @@
 package com.google.android.exoplayer2.offline;
 
-import android.util.Log;
 import com.google.android.exoplayer2.upstream.HttpDataSource;
-import com.google.android.exoplayer2.upstream.vocabimate_stream.VocaDataSourceHelper;
+import com.vocabimate.protocol.LicenceModel;
 import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.Map;
 
 public class LicenceObtainer {
 
@@ -59,7 +55,7 @@ public class LicenceObtainer {
             InputStream in = urlConnection.getInputStream();
 
             String result = readStream(in);
-            listener.onLicenceReceived(new Gson().fromJson(result, VocaDataSourceHelper.LicenceModel.class));
+            listener.onLicenceReceived(new Gson().fromJson(result, LicenceModel.class));
 
             /*InputStreamReader isw = new InputStreamReader(in);
             int data = isw.read();
@@ -102,6 +98,6 @@ public class LicenceObtainer {
 
 
     interface ILicenceData {
-        public void onLicenceReceived(VocaDataSourceHelper.LicenceModel licenceModel);
+        public void onLicenceReceived(LicenceModel licenceModel);
     }
 }

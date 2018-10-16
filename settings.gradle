@@ -17,7 +17,7 @@ def modulePrefix = ':'
 if (gradle.ext.has('exoplayerModulePrefix')) {
     modulePrefix += gradle.ext.exoplayerModulePrefix
 }
-
+include ':protocol'
 include modulePrefix + 'demo'
 include modulePrefix + 'demo-cast'
 include modulePrefix + 'demo-ima'

@@ -69,7 +69,7 @@ dependencies {
     testImplementation 'com.google.auto.value:auto-value-annotations:' + autoValueVersion
     testAnnotationProcessor 'com.google.auto.value:auto-value:' + autoValueVersion
     implementation 'com.google.code.gson:gson:2.8.2'
-
+    implementation project(':protocol')
 }
 
 ext {

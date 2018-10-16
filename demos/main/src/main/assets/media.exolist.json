@@ -23,6 +23,10 @@
         "uri": "https://vocatest-a40ab.firebaseapp.com/encrypted_android_no_key/prog_index.m3u8"
       },
       {
+        "name": "Video 30 - Master Playlist",
+        "uri":"https://voca2hosting.firebaseapp.com/vid30/playlist.m3u8"
+      },
+      {
         "name": "Encrypted Custom Small",
         "uri": "https://voca2hosting.firebaseapp.com/small_files/encrypted_without_key/index.m3u8"
       },
@@ -41,6 +45,10 @@
       {
         "name": "Video from server in video list",
         "uri":"http://54.152.186.92:60801/drm/static/tutorial/playlist.m3u8"
+      },
+      {
+        "name": "Video 20",
+        "uri":"http://54.152.186.92:60801/drm/static/video/inayat/sample_category/vid5/playlist.m3u8"
       }
     ]
   }

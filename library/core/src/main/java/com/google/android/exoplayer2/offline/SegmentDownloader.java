@@ -24,14 +24,12 @@ import com.google.android.exoplayer2.upstream.cache.Cache;
 import com.google.android.exoplayer2.upstream.cache.CacheDataSource;
 import com.google.android.exoplayer2.upstream.cache.CacheUtil;
 import com.google.android.exoplayer2.upstream.cache.CacheUtil.CachingCounters;
-import com.google.android.exoplayer2.upstream.vocabimate_stream.VocaDataSourceHelper;
 import com.google.android.exoplayer2.util.PriorityTaskManager;
-import com.google.gson.Gson;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**

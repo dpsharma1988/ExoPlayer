@@ -19,19 +19,16 @@ import android.net.Uri;
 import android.text.TextUtils;
 import android.util.Log;
 import com.google.android.exoplayer2.C;
-import com.google.android.exoplayer2.upstream.vocabimate_stream.AesEncryptionUtil;
+import com.vocabimate.protocol.AesEncryptionUtil;
 import com.google.android.exoplayer2.upstream.vocabimate_stream.CustomDataSource;
-import com.google.android.exoplayer2.upstream.vocabimate_stream.VocaDataSourceHelper;
 import com.google.android.exoplayer2.util.Assertions;
 import com.google.android.exoplayer2.util.Predicate;
 import com.google.android.exoplayer2.util.Util;
 import com.google.android.exoplayer2.vocab.KeyHelperModel;
-import com.google.gson.Gson;
-import java.io.BufferedReader;
+
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.InterruptedIOException;
 import java.io.OutputStream;
 import java.lang.reflect.Method;
@@ -267,121 +264,6 @@ public class DefaultHttpDataSource implements HttpDataSource {
     return bytesToRead;
   }
 
-  /**
-   * Custom method for custom scheme.
-   */
-  private HttpURLConnection makeConnectionCustom() throws IOException {
-
-    if (this instanceof CustomDataSource) {
-      KeyHelperModel keyHelper = ((CustomDataSource) this).getKeyHelperModel();
-      if (keyHelper != null) {
-        String token = keyHelper.getToken();
-        if(token != null && token.length() > 0) {
-          connection.setRequestProperty("access_token", token);
-        }
-
-        String videoId = keyHelper.getVideoId(); // todo check this
-        if (videoId == null) {
-          throw new NullPointerException("Video id is not set.");
-        }
-
-        URL keyUrl = null;
-        if (keyHelper.getKeyPath() == null) {
-          String licenceUrl = keyHelper.getLicecnceUrl(); //"https://voca2hosting.firebaseapp.com/small_files/license_key_path_absolute.json";
-          URL url = new URL(licenceUrl);
-
-          // parse licence
-          HttpURLConnection httpURLConnection = null;
-          try {
-            httpURLConnection = (HttpURLConnection) url
-                    .openConnection();
-
-            InputStream in = httpURLConnection.getInputStream();
-            String result = readStream(in);
-            VocaDataSourceHelper.LicenceModel licenceModel = new Gson()
-                    .fromJson(result, VocaDataSourceHelper.LicenceModel.class);
-            if (licenceModel != null) {
-              keyUrl = new URL(licenceModel.getPath());
-            }
-
-            /*InputStreamReader isw = new InputStreamReader(in);
-            int data = isw.read();
-            while (data != -1) {
-                char current = (char) data;
-                data = isw.read();
-                System.out.print(current);
-            }*/
-          } catch (Exception e) {
-            e.printStackTrace();
-          } finally {
-            if (httpURLConnection != null) {
-              httpURLConnection.disconnect();
-            }
-          }
-        } else {
-          keyUrl = new URL(keyHelper.getKeyPath());
-        }
-        HttpURLConnection connection = null;
-//    keyUrl = new URL("http://54.152.186.92:60801/static/sample/enc.key"); // temp
-        if (keyUrl != null) {
-          connection = (HttpURLConnection) keyUrl.openConnection();
-          connection.setConnectTimeout(connectTimeoutMillis);
-          connection.setReadTimeout(readTimeoutMillis);
-          if (defaultRequestProperties != null) {
-            for (Map.Entry<String, String> property : defaultRequestProperties.getSnapshot()
-                    .entrySet()) {
-              connection.setRequestProperty(property.getKey(), property.getValue());
-            }
-          }
-          for (Map.Entry<String, String> property : requestProperties.getSnapshot().entrySet()) {
-            connection.setRequestProperty(property.getKey(), property.getValue());
-          }
-          connection.setRequestProperty("User-Agent", userAgent);
-          connection.setRequestMethod("GET");
-//    if(!TextUtils.isEmpty(TokenManager.getToken())) {
-          if (this instanceof CustomDataSource) {
-            KeyHelperModel keyHelperModel = ((CustomDataSource) this).getKeyHelperModel();
-            if (keyHelperModel != null) {
-              String token2 = keyHelper.getToken();
-              if(token2 != null && token2.length() > 0) {
-                connection.setRequestProperty("access_token", token2);
-              }
-            }
-          }
-
-//    }
-          Log.d(TAG, "ResponseCode: " + connection.getResponseCode());
-        }
-        return connection;
-      }
-    }
-    return connection;
-  }
-
-  private String readStream(InputStream in) {
-    BufferedReader reader = null;
-    StringBuffer response = new StringBuffer();
-    try {
-      reader = new BufferedReader(new InputStreamReader(in));
-      String line = "";
-      while ((line = reader.readLine()) != null) {
-        response.append(line);
-      }
-    } catch (IOException e) {
-      e.printStackTrace();
-    } finally {
-      if (reader != null) {
-        try {
-          reader.close();
-        } catch (IOException e) {
-          e.printStackTrace();
-        }
-      }
-    }
-    return response.toString();
-  }
-
-
   @Override
   public int read(byte[] buffer, int offset, int readLength) throws HttpDataSourceException {
     try {
@@ -464,10 +346,7 @@ public class DefaultHttpDataSource implements HttpDataSource {
     try {
       url = new URL(dataSpec.uri.toString());
     } catch (MalformedURLException e) {
-      if (e.getMessage().contains("vcb")) {
-        connection = makeConnectionCustom();
-        return connection;
-      }
+      e.printStackTrace();
     }
     byte[] postBody = dataSpec.postBody;
     long position = dataSpec.position;
@@ -531,6 +410,7 @@ public class DefaultHttpDataSource implements HttpDataSource {
           String token = keyHelperModel.getToken();
           if(token != null && token.length() > 0) {
             defaultRequestProperties.set("access_token", token);
+            defaultRequestProperties.set("licence_url", keyHelperModel.getLicecnceUrl());
           }
         }
       }
@@ -722,13 +602,16 @@ public class DefaultHttpDataSource implements HttpDataSource {
      * We then override the read variable with the result received after our encryption.
      * When we get -1 from read variable that means file has ended.
      */
-    if(dataSpec.key != null && dataSpec.key.contains(".key")) {
+    if(dataSpec.key != null && (dataSpec.key.contains(".key") || dataSpec.key.contains("vcb"))) {
+//      if(inputStream == null){
+//        read = parseData(buffer);
+//      } else {
       read = inputStream.read(buffer);
+//      }
       if (read == 16) {
         byte[] testValue = new byte[16];
         System.arraycopy(buffer, 0, testValue, 0, 16);
-        byte[] finalDataWritten = AesEncryptionUtil
-            .encrypt("Bar12345Bar12345", "pppppppppppppppp", testValue);
+        byte[] finalDataWritten = AesEncryptionUtil.encrypt("Bar12345Bar12345", "pppppppppppppppp", testValue);
         System.arraycopy(finalDataWritten, 0, buffer, 0, finalDataWritten.length);
         read = finalDataWritten.length;
       }
