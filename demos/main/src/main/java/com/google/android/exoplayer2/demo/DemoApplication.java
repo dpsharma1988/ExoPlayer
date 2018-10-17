@@ -47,6 +47,8 @@ public class DemoApplication extends Application {
   private static final String DOWNLOAD_TRACKER_ACTION_FILE = "tracked_actions";
   private static final String DOWNLOAD_CONTENT_DIRECTORY = "downloads";
   private static final int MAX_SIMULTANEOUS_DOWNLOADS = 2;
+  private KeyHelperModel keyHelperModel;
+
   private static final Deserializer[] DOWNLOAD_DESERIALIZERS =
       new Deserializer[] {
         DashDownloadAction.DESERIALIZER,
@@ -78,7 +80,8 @@ public class DemoApplication extends Application {
   /** Returns a {@link HttpDataSource.Factory}. */
   public HttpDataSource.Factory buildHttpDataSourceFactory(TransferListener<? super DataSource> listener,
       KeyHelperModel keyHelper) {
-    return new CustomDataSourceFactory(userAgent, listener, keyHelper);
+    return  new CustomDataSourceFactory("Exo", listener, keyHelper);
+
   }
 
   /** Returns whether extension renderers should be used. */
@@ -98,6 +101,7 @@ public class DemoApplication extends Application {
 
   public DownloadTracker getDownloadTracker(KeyHelperModel keyHelperModel){
     initDownloadManager(keyHelperModel);
+    this.keyHelperModel = keyHelperModel;
     return downloadTracker;
   }
 
@@ -121,6 +125,13 @@ public class DemoApplication extends Application {
               new File(getDownloadDirectory(), DOWNLOAD_TRACKER_ACTION_FILE),
               DOWNLOAD_DESERIALIZERS);
       downloadManager.addListener(downloadTracker);
+
+    }
+    else
+    {
+      DownloaderConstructorHelper downloaderConstructorHelper =    new DownloaderConstructorHelper(
+              getDownloadCache(), buildHttpDataSourceFactory(/* listener= */ null,  this.keyHelperModel ));
+      downloadManager.setDownloaderConstructorHelper(downloaderConstructorHelper);
     }
   }
 

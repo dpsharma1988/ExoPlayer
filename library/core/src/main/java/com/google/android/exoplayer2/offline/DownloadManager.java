@@ -84,7 +84,7 @@ public final class DownloadManager {
   private static final String TAG = "DownloadManager";
   private static final boolean DEBUG = false;
 
-  private final DownloaderConstructorHelper downloaderConstructorHelper;
+  private DownloaderConstructorHelper downloaderConstructorHelper;
   private final int maxActiveDownloadTasks;
   private final int minRetryCount;
   private final ActionFile actionFile;
@@ -110,6 +110,8 @@ public final class DownloadManager {
    * @param actionSaveFile File to save active actions.
    * @param deserializers Used to deserialize {@link DownloadAction}s.
    */
+
+
   public DownloadManager(
       Cache cache,
       DataSource.Factory upstreamDataSourceFactory,
@@ -119,6 +121,16 @@ public final class DownloadManager {
         new DownloaderConstructorHelper(cache, upstreamDataSourceFactory),
         actionSaveFile,
         deserializers);
+  }
+
+
+  public DownloaderConstructorHelper getDownloaderConstrucorHelper()
+  {
+    return this.downloaderConstructorHelper;
+  }
+
+  public void setDownloaderConstructorHelper(DownloaderConstructorHelper downloaderConstructorHelper) {
+    this.downloaderConstructorHelper = downloaderConstructorHelper;
   }
 
   /**
