@@ -75,7 +75,7 @@ import com.google.android.exoplayer2.upstream.HttpDataSource;
 import com.google.android.exoplayer2.util.ErrorMessageProvider;
 import com.google.android.exoplayer2.util.EventLogger;
 import com.google.android.exoplayer2.util.Util;
-import com.vocabimate.protocol.KeyHelperModel;
+import com.vocabimate.protocol.ILicenceTo;
 
 import java.lang.reflect.Constructor;
 import java.net.CookieHandler;
@@ -156,7 +156,7 @@ public class PlayerActivity extends Activity
 
     Intent intent = getIntent();
     if(intent.hasExtra("keyHelperModel")){
-      KeyHelperModel keyHelperModel = (KeyHelperModel) intent.getSerializableExtra("keyHelperModel");
+      ILicenceTo keyHelperModel = (ILicenceTo) intent.getSerializableExtra("keyHelperModel");
       mediaDataSourceFactory = buildDataSourceFactory(true, keyHelperModel);
     } else {
       throw new NullPointerException("keyHelperModel not found inside intent, forgot to call: intent.putExtra(\"keyHelperModel\", keyHelperModel);");
@@ -554,7 +554,7 @@ public class PlayerActivity extends Activity
    * @param keyHelperModel
    * @return A new DataSource factory.
    */
-  private DataSource.Factory buildDataSourceFactory(boolean useBandwidthMeter, KeyHelperModel keyHelperModel) {
+  private DataSource.Factory buildDataSourceFactory(boolean useBandwidthMeter, ILicenceTo keyHelperModel) {
     return ((DemoApplication) getApplication())
         .buildDataSourceFactory(useBandwidthMeter ? BANDWIDTH_METER : null, keyHelperModel);
   }

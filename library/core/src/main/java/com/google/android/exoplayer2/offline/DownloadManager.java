@@ -809,7 +809,7 @@ public final class DownloadManager {
       logd("Task is started", this);
       Throwable error = null;
       try {
-        downloader = action.createDownloader(downloadManager.downloaderConstructorHelper, action.mDummy);
+        downloader = action.createDownloader(downloadManager.downloaderConstructorHelper, action.mKeyHelper);
         if (action.isRemoveAction) {
           downloader.remove();
         } else {

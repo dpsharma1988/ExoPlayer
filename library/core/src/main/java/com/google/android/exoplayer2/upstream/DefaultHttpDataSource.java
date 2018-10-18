@@ -24,7 +24,8 @@ import com.google.android.exoplayer2.upstream.vocabimate_stream.CustomDataSource
 import com.google.android.exoplayer2.util.Assertions;
 import com.google.android.exoplayer2.util.Predicate;
 import com.google.android.exoplayer2.util.Util;
-import com.vocabimate.protocol.KeyHelperModel;
+import com.vocabimate.protocol.ILicenceTo;
+import com.vocabimate.protocol.ILicenceTo;
 import com.vocabimate.protocol.VocabimateHttpUrlConnection;
 
 import java.io.EOFException;
@@ -406,7 +407,7 @@ public class DefaultHttpDataSource implements HttpDataSource {
     if (defaultRequestProperties != null) {
 
       if(this instanceof CustomDataSource){
-        KeyHelperModel keyHelperModel = ((CustomDataSource) this).getKeyHelperModel();
+        ILicenceTo keyHelperModel = ((CustomDataSource) this).getKeyHelperModel();
         if(connection instanceof VocabimateHttpUrlConnection){
           ((VocabimateHttpUrlConnection)connection).setKeyHelper(keyHelperModel);
         }
@@ -414,7 +415,7 @@ public class DefaultHttpDataSource implements HttpDataSource {
           String token = keyHelperModel.getToken();
           if(token != null && token.length() > 0) {
             defaultRequestProperties.set("access_token", token);
-            defaultRequestProperties.set("licence_url", keyHelperModel.getLicecnceUrl());
+            defaultRequestProperties.set("licence_url", keyHelperModel.getLicenceUrl());
           }
         }
       }

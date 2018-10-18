@@ -30,7 +30,7 @@ import com.google.android.exoplayer2.source.hls.playlist.RenditionKey;
 import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.ParsingLoadable;
 import com.google.android.exoplayer2.util.Assertions;
-import com.vocabimate.protocol.Dummy;
+import com.vocabimate.protocol.ILicenceTo;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -99,16 +99,16 @@ public final class HlsDownloadHelper extends DownloadHelper {
   }
 
   @Override
-  public HlsDownloadAction getDownloadAction(@Nullable byte[] data, List<TrackKey> trackKeys, Dummy dummy) {
+  public HlsDownloadAction getDownloadAction(@Nullable byte[] data, List<TrackKey> trackKeys, ILicenceTo keyHelper) {
     Assertions.checkNotNull(renditionTypes);
     return new HlsDownloadAction(
-        uri, /* isRemoveAction= */ false, data, toRenditionKeys(trackKeys, renditionTypes), dummy);
+        uri, /* isRemoveAction= */ false, data, toRenditionKeys(trackKeys, renditionTypes), keyHelper);
   }
 
   @Override
-  public HlsDownloadAction getRemoveAction(@Nullable byte[] data, Dummy dummy) {
+  public HlsDownloadAction getRemoveAction(@Nullable byte[] data, ILicenceTo keyHelper) {
     return new HlsDownloadAction(
-        uri, /* isRemoveAction= */ true, data, Collections.<RenditionKey>emptyList(), dummy);
+        uri, /* isRemoveAction= */ true, data, Collections.<RenditionKey>emptyList(), keyHelper);
   }
 
   private static Format[] toFormats(List<HlsMasterPlaylist.HlsUrl> hlsUrls) {

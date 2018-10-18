@@ -30,6 +30,8 @@ import com.google.android.exoplayer2.source.dash.manifest.RepresentationKey;
 import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.ParsingLoadable;
 import com.google.android.exoplayer2.util.Assertions;
+import com.vocabimate.protocol.ILicenceTo;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -86,15 +88,15 @@ public final class DashDownloadHelper extends DownloadHelper {
   }
 
   @Override
-  public DashDownloadAction getDownloadAction(@Nullable byte[] data, List<TrackKey> trackKeys, com.vocabimate.protocol.Dummy dummy) {
+  public DashDownloadAction getDownloadAction(@Nullable byte[] data, List<TrackKey> trackKeys, ILicenceTo keyHelper) {
     return new DashDownloadAction(
-        uri, /* isRemoveAction= */ false, data, toRepresentationKeys(trackKeys), dummy);
+        uri, /* isRemoveAction= */ false, data, toRepresentationKeys(trackKeys), keyHelper);
   }
 
   @Override
-  public DashDownloadAction getRemoveAction(@Nullable byte[] data, com.vocabimate.protocol.Dummy dummy) {
+  public DashDownloadAction getRemoveAction(@Nullable byte[] data, ILicenceTo keyHelper) {
     return new DashDownloadAction(
-        uri, /* isRemoveAction= */ true, data, Collections.<RepresentationKey>emptyList(), dummy);
+        uri, /* isRemoveAction= */ true, data, Collections.<RepresentationKey>emptyList(), keyHelper);
   }
 
   private static List<RepresentationKey> toRepresentationKeys(List<TrackKey> trackKeys) {

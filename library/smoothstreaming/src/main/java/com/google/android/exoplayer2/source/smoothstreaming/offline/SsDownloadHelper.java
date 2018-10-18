@@ -27,6 +27,8 @@ import com.google.android.exoplayer2.source.smoothstreaming.manifest.StreamKey;
 import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.ParsingLoadable;
 import com.google.android.exoplayer2.util.Assertions;
+import com.vocabimate.protocol.ILicenceTo;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -76,14 +78,14 @@ public final class SsDownloadHelper extends DownloadHelper {
   }
 
   @Override
-  public SsDownloadAction getDownloadAction(@Nullable byte[] data, List<TrackKey> trackKeys, com.vocabimate.protocol.Dummy dummy) {
-    return new SsDownloadAction(uri, /* isRemoveAction= */ false, data, toStreamKeys(trackKeys), dummy);
+  public SsDownloadAction getDownloadAction(@Nullable byte[] data, List<TrackKey> trackKeys, ILicenceTo keyHelper) {
+    return new SsDownloadAction(uri, /* isRemoveAction= */ false, data, toStreamKeys(trackKeys), keyHelper);
   }
 
   @Override
-  public SsDownloadAction getRemoveAction(@Nullable byte[] data, com.vocabimate.protocol.Dummy dummy) {
+  public SsDownloadAction getRemoveAction(@Nullable byte[] data, ILicenceTo keyHelper) {
     return new SsDownloadAction(
-        uri, /* isRemoveAction= */ true, data, Collections.<StreamKey>emptyList(), dummy);
+        uri, /* isRemoveAction= */ true, data, Collections.<StreamKey>emptyList(), keyHelper);
   }
 
   private static List<StreamKey> toStreamKeys(List<TrackKey> trackKeys) {

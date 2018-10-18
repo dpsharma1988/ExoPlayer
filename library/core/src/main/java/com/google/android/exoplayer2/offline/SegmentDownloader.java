@@ -25,7 +25,7 @@ import com.google.android.exoplayer2.upstream.cache.CacheDataSource;
 import com.google.android.exoplayer2.upstream.cache.CacheUtil;
 import com.google.android.exoplayer2.upstream.cache.CacheUtil.CachingCounters;
 import com.google.android.exoplayer2.util.PriorityTaskManager;
-import com.vocabimate.protocol.Dummy;
+import com.vocabimate.protocol.ILicenceTo;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -116,15 +116,15 @@ public abstract class SegmentDownloader<M extends FilterableManifest<M, K>, K>
    * @param streamKeys Keys defining which streams in the manifest should be selected for download.
    *     If empty, all streams are downloaded.
    * @param constructorHelper A {@link DownloaderConstructorHelper} instance.
-   * @param dummy
+   * @param keyHelper
    */
   public SegmentDownloader(
-          Uri manifestUri, List<K> streamKeys, DownloaderConstructorHelper constructorHelper, Dummy dummy) {
+          Uri manifestUri, List<K> streamKeys, DownloaderConstructorHelper constructorHelper, ILicenceTo keyHelper) {
     this.manifestUri = manifestUri;
     this.streamKeys = new ArrayList<>(streamKeys);
     this.cache = constructorHelper.getCache();
-    this.dataSource = constructorHelper.buildCacheDataSource(false, dummy);
-    this.offlineDataSource = constructorHelper.buildCacheDataSource(true, dummy);
+    this.dataSource = constructorHelper.buildCacheDataSource(false, keyHelper);
+    this.offlineDataSource = constructorHelper.buildCacheDataSource(true, keyHelper);
     this.priorityTaskManager = constructorHelper.getPriorityTaskManager();
     totalSegments = C.LENGTH_UNSET;
     isCanceled = new AtomicBoolean();

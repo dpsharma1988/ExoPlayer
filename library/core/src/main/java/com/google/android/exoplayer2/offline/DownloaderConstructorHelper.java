@@ -29,7 +29,7 @@ import com.google.android.exoplayer2.upstream.cache.CacheDataSource;
 import com.google.android.exoplayer2.upstream.vocabimate_stream.CustomDataSource;
 import com.google.android.exoplayer2.util.Assertions;
 import com.google.android.exoplayer2.util.PriorityTaskManager;
-import com.vocabimate.protocol.Dummy;
+import com.vocabimate.protocol.ILicenceTo;
 
 /** A helper class that holds necessary parameters for {@link Downloader} construction. */
 public final class DownloaderConstructorHelper {
@@ -89,7 +89,7 @@ public final class DownloaderConstructorHelper {
    * Returns a new {@link CacheDataSource} instance. If {@code offline} is true, it can only read
    * data from the cache.
    */
-  public CacheDataSource buildCacheDataSource(boolean offline, Dummy dummy) {
+  public CacheDataSource buildCacheDataSource(boolean offline, ILicenceTo keyHelper) {
     DataSource cacheReadDataSource = cacheReadDataSourceFactory != null
         ? cacheReadDataSourceFactory.createDataSource() : new FileDataSource();
     if (offline) {
@@ -101,7 +101,7 @@ public final class DownloaderConstructorHelper {
           : new CacheDataSink(cache, CacheDataSource.DEFAULT_MAX_CACHE_FILE_SIZE);
       DataSource upstream = upstreamDataSourceFactory.createDataSource();
       if(upstream instanceof CustomDataSource){
-        ((CustomDataSource) upstream).setKeyHelperModel(dummy.getKeyHelper());
+        ((CustomDataSource) upstream).setKeyHelperModel(keyHelper);
       }
       upstream = priorityTaskManager == null ? upstream
           : new PriorityDataSource(upstream, priorityTaskManager, C.PRIORITY_DOWNLOAD);

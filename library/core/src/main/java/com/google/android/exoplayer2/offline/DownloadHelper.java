@@ -19,7 +19,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.Nullable;
 import com.google.android.exoplayer2.source.TrackGroupArray;
-import com.vocabimate.protocol.Dummy;
+import com.vocabimate.protocol.ILicenceTo;
 
 import java.io.IOException;
 import java.util.List;
@@ -110,17 +110,17 @@ public abstract class DownloadHelper {
    *
    * @param data Application provided data to store in {@link DownloadAction#data}.
    * @param trackKeys The selected tracks. If empty, all streams will be downloaded.
-   * @param dummy
+   * @param keyHelper
    * @return The built {@link DownloadAction}.
    */
-  public abstract DownloadAction getDownloadAction(@Nullable byte[] data, List<TrackKey> trackKeys, Dummy dummy);
+  public abstract DownloadAction getDownloadAction(@Nullable byte[] data, List<TrackKey> trackKeys, ILicenceTo keyHelper);
 
   /**
    * Builds a {@link DownloadAction} for removing the media. May be called in any state.
    *
    * @param data Application provided data to store in {@link DownloadAction#data}.
-   * @param dummy
+   * @param keyHelper
    * @return The built {@link DownloadAction}.
    */
-  public abstract DownloadAction getRemoveAction(@Nullable byte[] data, Dummy dummy);
+  public abstract DownloadAction getRemoveAction(@Nullable byte[] data, ILicenceTo keyHelper);
 }

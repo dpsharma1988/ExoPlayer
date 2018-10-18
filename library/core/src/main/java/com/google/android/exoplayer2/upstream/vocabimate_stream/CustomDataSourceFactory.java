@@ -21,7 +21,7 @@ import com.google.android.exoplayer2.upstream.HttpDataSource;
 import com.google.android.exoplayer2.upstream.HttpDataSource.BaseFactory;
 import com.google.android.exoplayer2.upstream.HttpDataSource.Factory;
 import com.google.android.exoplayer2.upstream.TransferListener;
-import com.vocabimate.protocol.KeyHelperModel;
+import com.vocabimate.protocol.ILicenceTo;
 
 /**
  * A {@link Factory} that produces {@link DefaultHttpDataSource} instances.
@@ -33,7 +33,7 @@ public final class CustomDataSourceFactory extends BaseFactory {
     private final int connectTimeoutMillis;
     private final int readTimeoutMillis;
     private final boolean allowCrossProtocolRedirects;
-    private KeyHelperModel keyHelperModel;
+    private ILicenceTo licence;
 
     /**
      * Constructs a DefaultHttpDataSourceFactory. Sets {@link
@@ -43,8 +43,8 @@ public final class CustomDataSourceFactory extends BaseFactory {
      *
      * @param userAgent The User-Agent string that should be used.
      */
-    public CustomDataSourceFactory(String userAgent, KeyHelperModel keyHelperModel) {
-        this(userAgent, null, keyHelperModel);
+    public CustomDataSourceFactory(String userAgent, ILicenceTo licence) {
+        this(userAgent, null, licence);
     }
 
     /**
@@ -59,9 +59,9 @@ public final class CustomDataSourceFactory extends BaseFactory {
 
 
     public CustomDataSourceFactory(
-            String userAgent, TransferListener<? super DataSource> listener, KeyHelperModel keyHelperModel) {
+            String userAgent, TransferListener<? super DataSource> listener, ILicenceTo licence) {
         this(userAgent, listener, DefaultHttpDataSource.DEFAULT_CONNECT_TIMEOUT_MILLIS,
-                DefaultHttpDataSource.DEFAULT_READ_TIMEOUT_MILLIS, false, keyHelperModel);
+                DefaultHttpDataSource.DEFAULT_READ_TIMEOUT_MILLIS, false, licence);
     }
 
     /**
@@ -76,13 +76,13 @@ public final class CustomDataSourceFactory extends BaseFactory {
      */
     public CustomDataSourceFactory(String userAgent,
                                    TransferListener<? super DataSource> listener, int connectTimeoutMillis,
-                                   int readTimeoutMillis, boolean allowCrossProtocolRedirects, KeyHelperModel keyHelperModel) {
+                                   int readTimeoutMillis, boolean allowCrossProtocolRedirects, ILicenceTo licence) {
         this.userAgent = userAgent;
         this.listener = listener;
         this.connectTimeoutMillis = connectTimeoutMillis;
         this.readTimeoutMillis = readTimeoutMillis;
         this.allowCrossProtocolRedirects = allowCrossProtocolRedirects;
-        this.keyHelperModel = keyHelperModel;
+        this.licence = licence;
     }
 
     @Override
@@ -90,7 +90,7 @@ public final class CustomDataSourceFactory extends BaseFactory {
             HttpDataSource.RequestProperties defaultRequestProperties) {
         CustomDataSource defaultHttpDataSource = new CustomDataSource(userAgent, null,
                 listener, connectTimeoutMillis,
-                readTimeoutMillis, allowCrossProtocolRedirects, defaultRequestProperties).setKeyHelperModel(keyHelperModel);
+                readTimeoutMillis, allowCrossProtocolRedirects, defaultRequestProperties).setKeyHelperModel(licence);
         return defaultHttpDataSource;
     }
 

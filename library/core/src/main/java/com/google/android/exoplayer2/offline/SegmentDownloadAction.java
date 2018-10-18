@@ -19,17 +19,11 @@ import android.net.Uri;
 import android.support.annotation.Nullable;
 import com.google.android.exoplayer2.util.Assertions;
 import com.google.android.exoplayer2.util.Util;
-import com.vocabimate.protocol.Dummy;
+import com.vocabimate.protocol.ILicenceTo;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.ObjectInput;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutput;
-import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -63,14 +57,14 @@ public abstract class SegmentDownloadAction<K extends Comparable<K>> extends Dow
       int byteArrayLength = input.readInt();
       byte[] dummyBytes = new byte[byteArrayLength];
       input.readFully(dummyBytes);
-      Dummy dummy = (Dummy) Util.convertToObject(dummyBytes);
+      ILicenceTo keyHelper = (ILicenceTo) Util.convertToObject(dummyBytes);
       int keyCount = input.readInt();
       List<K> keys = new ArrayList<>();
       for (int i = 0; i < keyCount; i++) {
         keys.add(readKey(input));
       }
 
-      return createDownloadAction(uri, isRemoveAction, data, keys, dummy);
+      return createDownloadAction(uri, isRemoveAction, data, keys, keyHelper);
     }
 
     /** Deserializes a key from the {@code input}. */
@@ -78,7 +72,7 @@ public abstract class SegmentDownloadAction<K extends Comparable<K>> extends Dow
 
     /** Returns a {@link DownloadAction}. */
     protected abstract DownloadAction createDownloadAction(
-            Uri manifestUri, boolean isRemoveAction, byte[] data, List<K> keys, Dummy dummy);
+            Uri manifestUri, boolean isRemoveAction, byte[] data, List<K> keys, ILicenceTo keyHelper);
   }
 
   public final List<K> keys;
@@ -91,7 +85,7 @@ public abstract class SegmentDownloadAction<K extends Comparable<K>> extends Dow
    * @param data Optional custom data for this action. If {@code null} an empty array will be used.
    * @param keys Keys of tracks to be downloaded. If empty, all tracks will be downloaded. If {@code
 *     removeAction} is true, {@code keys} must be empty.
-   * @param dummy
+   * @param keyHelper
    */
   protected SegmentDownloadAction(
           String type,
@@ -99,8 +93,8 @@ public abstract class SegmentDownloadAction<K extends Comparable<K>> extends Dow
           Uri uri,
           boolean isRemoveAction,
           @Nullable byte[] data,
-          List<K> keys, Dummy dummy) {
-    super(type, version, uri, isRemoveAction, data, dummy);
+          List<K> keys, ILicenceTo keyHelper) {
+    super(type, version, uri, isRemoveAction, data, keyHelper);
     if (isRemoveAction) {
       Assertions.checkArgument(keys.isEmpty());
       this.keys = Collections.emptyList();
@@ -117,7 +111,7 @@ public abstract class SegmentDownloadAction<K extends Comparable<K>> extends Dow
     output.writeBoolean(isRemoveAction);
     output.writeInt(data.length);
     output.write(data);
-    byte[] dummyBytes = Util.convertToBytes(mDummy);
+    byte[] dummyBytes = Util.convertToBytes(mKeyHelper);
     output.writeInt(dummyBytes.length);
     output.write(dummyBytes);
     output.writeInt(keys.size());

@@ -7,6 +7,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
@@ -16,7 +17,7 @@ import java.net.URL;
 public class VocabimateHttpUrlConnection extends HttpURLConnection {
 
     protected VocAbsInputStream vocAbsInputStream;
-    private KeyHelperModel keyHelper;
+    private ILicenceTo licence;
 
     /**
      * @see com.vocabimate.protocol.VocabimateInputStream VocabimateInputStream
@@ -35,8 +36,8 @@ public class VocabimateHttpUrlConnection extends HttpURLConnection {
     public void connect() throws IOException {
 
         // todo Need to fix things here, not getting token and licence url on older phones.
-        String licence_url = keyHelper.getLicecnceUrl();//getRequestProperty("licence_url");
-        String token = keyHelper.getToken();//getRequestProperty("access_token");
+        String licence_url = licence.getLicenceUrl();//getRequestProperty("licence_url");
+        String token = licence.getToken();//getRequestProperty("access_token");
 //        if (licence_url == null) {
 //            throw new Error("Licence url is not provided in header, please set 'licence_url' just like access_token");
 //        }
@@ -45,10 +46,22 @@ public class VocabimateHttpUrlConnection extends HttpURLConnection {
 //        }
         URL url = new URL(licence_url);
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-
-        if (token == null) {
-            vocAbsInputStream.setInputStream(connection.getInputStream());
+        if(licence.getType() == null) {
+            connection.setRequestMethod("POST"); // default
+        } else {
+            connection.setRequestMethod(licence.getType());
         }
+        connection.setDoInput(true);
+        connection.setDoOutput(true);
+        connection.setRequestProperty("access_token", token);
+        connection.setRequestProperty("Content-Type", "application/json");
+
+        if(licence.jsonBody() != null) {
+            OutputStreamWriter wr = new OutputStreamWriter(connection.getOutputStream());
+            wr.write(licence.jsonBody());
+            wr.flush();
+        }
+
         if (token != null) {
             String result = readStream(connection.getInputStream());
             LicenceModel licenceModel = new Gson().fromJson(result, LicenceModel.class);
@@ -118,11 +131,7 @@ public class VocabimateHttpUrlConnection extends HttpURLConnection {
         return vocAbsInputStream;
     }
 
-    public KeyHelperModel getKeyHelper() {
-        return keyHelper;
-    }
-
-    public void setKeyHelper(KeyHelperModel keyHelper) {
-        this.keyHelper = keyHelper;
+    public void setKeyHelper(ILicenceTo licence) {
+        this.licence = licence;
     }
 }

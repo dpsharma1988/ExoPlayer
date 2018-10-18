@@ -4,17 +4,10 @@ import com.google.android.exoplayer2.upstream.DataSpec;
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSource;
 import com.google.android.exoplayer2.upstream.TransferListener;
 import com.google.android.exoplayer2.util.Predicate;
-import com.vocabimate.protocol.KeyHelperModel;
-import com.google.gson.Gson;
-import com.vocabimate.protocol.LicenceModel;
-import com.vocabimate.protocol.TokenDecryptionHelper;
+import com.vocabimate.protocol.ILicenceTo;
+import com.vocabimate.protocol.ILicenceTo;
 import com.vocabimate.protocol.VocabimateStreamHandlerFactory;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLStreamHandlerFactory;
 
@@ -23,15 +16,15 @@ import java.net.URLStreamHandlerFactory;
  */
 public final class CustomDataSource extends DefaultHttpDataSource {
 
-    private KeyHelperModel keyHelperModel;
+    private ILicenceTo licence;
 
-    public CustomDataSource setKeyHelperModel(KeyHelperModel keyHelperModel) {
-        this.keyHelperModel = keyHelperModel;
+    public CustomDataSource setKeyHelperModel(ILicenceTo licence) {
+        this.licence = licence;
         return this;
     }
 
-    public KeyHelperModel getKeyHelperModel() {
-        return keyHelperModel;
+    public ILicenceTo getKeyHelperModel() {
+        return licence;
     }
 
     @Override
@@ -144,8 +137,8 @@ public final class CustomDataSource extends DefaultHttpDataSource {
 //                    connection.setRequestMethod("GET");
 ////    if(!TextUtils.isEmpty(TokenManager.getToken())) {
 //                    if (this instanceof CustomDataSource) {
-//                        KeyHelperModel keyHelperModel = ((CustomDataSource) this).getKeyHelperModel();
-//                        if (keyHelperModel != null) {
+//                        KeyHelperModel licence = ((CustomDataSource) this).getKeyHelperModel();
+//                        if (licence != null) {
 //                            String token2 = keyHelper.getToken();
 //                            if(token2 != null && token2.length() > 0) {
 //                                connection.setRequestProperty("access_token", token2);
@@ -163,78 +156,78 @@ public final class CustomDataSource extends DefaultHttpDataSource {
 //    }
 
 
-    private int parseData(byte[] buffer) throws IOException {
-        KeyHelperModel keyHelper = ((CustomDataSource) this).getKeyHelperModel();
-        if (keyHelper != null) {
-            String videoId = keyHelper.getVideoId();
-            if (videoId == null) {
-                throw new NullPointerException("Video id is not set.");
-            }
-            String licenceUrl = keyHelper.getLicecnceUrl(); //"https://voca2hosting.firebaseapp.com/small_files/license_key_path_absolute.json";
-            URL url = new URL(licenceUrl);
-
-            // parse licence
-            HttpURLConnection licenseConnection = null;
-            try {
-                licenseConnection = (HttpURLConnection) url.openConnection();
-                String token = keyHelper.getToken();
-                if(token != null && token.length() > 0) {
-                    licenseConnection.setRequestProperty("access_token", token);
-                }
-                InputStream in = licenseConnection.getInputStream();
-                String result = readStream(in);
-                LicenceModel licenceModel = new Gson().fromJson(result, LicenceModel.class);
-                if(licenceModel != null && licenceModel.getLicenseFile().getDecryptionKey() != null) {
-                    TokenDecryptionHelper tokenDecryptionHelper = new TokenDecryptionHelper(keyHelper.getToken(), licenceModel.getLicenseFile().getDecryptionKey());
-                    byte[] decrypt = tokenDecryptionHelper.decrypt();
-                    for (int i = 0; i < decrypt.length; i++) {
-                        buffer[i] = decrypt[i];
-                    }
-                    return 16;
-                }
-
-        /*InputStreamReader isw = new InputStreamReader(in);
-        int data = isw.read();
-        while (data != -1) {
-            char current = (char) data;
-            data = isw.read();
-            System.out.print(current);
-        }*/
-            } catch (Exception e) {
-                e.printStackTrace();
-            } finally {
-                if (licenseConnection != null) {
-                    licenseConnection.disconnect();
-                }
-            }
-        }
-        return -1;
-    }
-
-
-
-    private String readStream(InputStream in) {
-        BufferedReader reader = null;
-        StringBuffer response = new StringBuffer();
-        try {
-            reader = new BufferedReader(new InputStreamReader(in));
-            String line = "";
-            while ((line = reader.readLine()) != null) {
-                response.append(line);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            if (reader != null) {
-                try {
-                    reader.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-        return response.toString();
-    }
+//    private int parseData(byte[] buffer) throws IOException {
+//        KeyHelperModel keyHelper = ((CustomDataSource) this).getKeyHelperModel();
+//        if (keyHelper != null) {
+//            String videoId = keyHelper.getVideoId();
+//            if (videoId == null) {
+//                throw new NullPointerException("Video id is not set.");
+//            }
+//            String licenceUrl = keyHelper.getLicecnceUrl(); //"https://voca2hosting.firebaseapp.com/small_files/license_key_path_absolute.json";
+//            URL url = new URL(licenceUrl);
+//
+//            // parse licence
+//            HttpURLConnection licenseConnection = null;
+//            try {
+//                licenseConnection = (HttpURLConnection) url.openConnection();
+//                String token = keyHelper.getToken();
+//                if(token != null && token.length() > 0) {
+//                    licenseConnection.setRequestProperty("access_token", token);
+//                }
+//                InputStream in = licenseConnection.getInputStream();
+//                String result = readStream(in);
+//                LicenceModel licenceModel = new Gson().fromJson(result, LicenceModel.class);
+//                if(licenceModel != null && licenceModel.getLicenseFile().getDecryptionKey() != null) {
+//                    TokenDecryptionHelper tokenDecryptionHelper = new TokenDecryptionHelper(keyHelper.getToken(), licenceModel.getLicenseFile().getDecryptionKey());
+//                    byte[] decrypt = tokenDecryptionHelper.decrypt();
+//                    for (int i = 0; i < decrypt.length; i++) {
+//                        buffer[i] = decrypt[i];
+//                    }
+//                    return 16;
+//                }
+//
+//        /*InputStreamReader isw = new InputStreamReader(in);
+//        int data = isw.read();
+//        while (data != -1) {
+//            char current = (char) data;
+//            data = isw.read();
+//            System.out.print(current);
+//        }*/
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            } finally {
+//                if (licenseConnection != null) {
+//                    licenseConnection.disconnect();
+//                }
+//            }
+//        }
+//        return -1;
+//    }
+//
+//
+//
+//    private String readStream(InputStream in) {
+//        BufferedReader reader = null;
+//        StringBuffer response = new StringBuffer();
+//        try {
+//            reader = new BufferedReader(new InputStreamReader(in));
+//            String line = "";
+//            while ((line = reader.readLine()) != null) {
+//                response.append(line);
+//            }
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        } finally {
+//            if (reader != null) {
+//                try {
+//                    reader.close();
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        }
+//        return response.toString();
+//    }
 
 
 }

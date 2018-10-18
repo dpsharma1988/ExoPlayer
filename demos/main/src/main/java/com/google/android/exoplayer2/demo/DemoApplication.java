@@ -35,7 +35,7 @@ import com.google.android.exoplayer2.upstream.cache.NoOpCacheEvictor;
 import com.google.android.exoplayer2.upstream.cache.SimpleCache;
 import com.google.android.exoplayer2.upstream.vocabimate_stream.CustomDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
-import com.vocabimate.protocol.KeyHelperModel;
+import com.vocabimate.protocol.ILicenceTo;
 
 import java.io.File;
 
@@ -70,7 +70,7 @@ public class DemoApplication extends Application {
   }
 
   /** Returns a {@link DataSource.Factory}. */
-  public DataSource.Factory buildDataSourceFactory(TransferListener<? super DataSource> listener, KeyHelperModel keyHelper) {
+  public DataSource.Factory buildDataSourceFactory(TransferListener<? super DataSource> listener, ILicenceTo keyHelper) {
     DefaultDataSourceFactory upstreamFactory =
         new DefaultDataSourceFactory(this, listener, buildHttpDataSourceFactory(listener, keyHelper));
     return buildReadOnlyCacheDataSource(upstreamFactory, getDownloadCache());
@@ -78,7 +78,7 @@ public class DemoApplication extends Application {
 
   /** Returns a {@link HttpDataSource.Factory}. */
   public HttpDataSource.Factory buildHttpDataSourceFactory(TransferListener<? super DataSource> listener,
-      KeyHelperModel keyHelper) {
+                                                           ILicenceTo keyHelper) {
     return new CustomDataSourceFactory(userAgent, listener, keyHelper);
   }
 
@@ -97,13 +97,13 @@ public class DemoApplication extends Application {
     return downloadTracker;
   }
 
-  public DownloadTracker getDownloadTracker(KeyHelperModel keyHelperModel){
+  public DownloadTracker getDownloadTracker(ILicenceTo keyHelperModel){
     initDownloadManager(keyHelperModel);
     return downloadTracker;
   }
 
   private synchronized void initDownloadManager(
-      KeyHelperModel keyHelper) {
+          ILicenceTo keyHelper) {
     if (downloadManager == null) {
       DownloaderConstructorHelper downloaderConstructorHelper =
           new DownloaderConstructorHelper(

@@ -41,8 +41,7 @@ import com.google.android.exoplayer2.upstream.DataSpec;
 import com.google.android.exoplayer2.upstream.DefaultDataSource;
 import com.google.android.exoplayer2.util.Assertions;
 import com.google.android.exoplayer2.util.Util;
-import com.vocabimate.protocol.Dummy;
-import com.vocabimate.protocol.KeyHelperModel;
+import com.vocabimate.protocol.ILicenceTo;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -139,13 +138,13 @@ public class SampleChooserActivity extends Activity
     Sample sample = (Sample) view.getTag();
     Intent intent = sample.buildIntent(this);
 
-    KeyHelperModel keyHelperModel = getKeyHelper(id, (UriSample) sample);
+    ILicenceTo keyHelperModel = getKeyHelper(id, (UriSample) sample);
     intent.putExtra("keyHelperModel", keyHelperModel);
     startActivity(intent);
     return true;
   }
 
-  public KeyHelperModel getKeyHelper(long videoId, UriSample sample) {
+  public ILicenceTo getKeyHelper(long videoId, UriSample sample) {
 //    String key = null;
 //    if(sample.uri.toString().contains("tutorial")){
 //      key = "http://54.152.186.92:60801/drm/static/tutorial/tutorial.key";
@@ -162,26 +161,33 @@ public class SampleChooserActivity extends Activity
 //        .setKeyPath(key)
 //        .setM3u8Path(sample.uri.toString());
 //
-    if(sample.uri.toString().contains("https://voca2hosting.firebaseapp.com/small_files/encrypted_without_key/index.m3u8")) {
-      return new KeyHelperModel().setVideoId("videoId: " + videoId)
-              .setM3u8Path("https://voca2hosting.firebaseapp.com/small_files/encrypted_without_key/index.m3u8")
-              .setLicecnceUrl("https://vocatest-a40ab.firebaseapp.com/small_files/enc.key")
-              .setToken(null);
-    }
+//    if(sample.uri.toString().contains("http://54.152.186.92:60801/drm/videoServer/Video/inayat/vid3_seg/playlist.m3u8")) {
+      return new LicenceBody(32, 18, "N",
+              "http://54.152.186.92:60801/drm/videoServer/Video/inayat/vid3_seg/playlist.m3u8",
+              "PROCsVCsQpw8RNBq8YwuZnOrULeREGlW3G9PZukrZmU=",
+              "http://54.152.186.92:60801/license/create_license"
+              );
+//      .setVideoId("videoId: " + videoId)
+//              .setM3u8Path("http://54.152.186.92:60801/drm/videoServer/Video/inayat/vid3_seg/playlist.m3u8")
+//              .setLicecnceUrl("http://54.152.186.92:60801/license/create_license")
+//              .setToken("PROCsVCsQpw8RNBq8YwuZnOrULeREGlW3G9PZukrZmU=")
+//              .setLicenceTo(licenceBody);
+//    }
+//    return null;
 
-    if(sample.uri.toString().contains("vid30")) {
-      return new KeyHelperModel().setVideoId("videoId: " + videoId)
-              .setM3u8Path("https://voca2hosting.firebaseapp.com/vid30/playlist.m3u8")
-              .setLicecnceUrl("https://voca2hosting.firebaseapp.com/vid30/licence")
-              .setToken("rmaC0c9VqdoDDCku3MsXLJw_LL2IM_62zw8lOwfJsLU=");
-    }
-
-
-
-    return new KeyHelperModel().setVideoId("videoId: " + videoId)
-        .setM3u8Path("http://54.152.186.92:60801/drm/static/video/inayat/sample_category/vid5/playlist.m3u8")
-        .setLicecnceUrl("http://54.152.186.92:60801/drm/get_key_for_a_video/20")
-        .setToken("l8TmQpaBEdDGCtbefPfzTx54Bt4nOQLgaH8s3edJDhs=");
+//    if(sample.uri.toString().contains("vid30")) {
+//      return new KeyHelperModel().setVideoId("videoId: " + videoId)
+//              .setM3u8Path("https://voca2hosting.firebaseapp.com/vid30/playlist.m3u8")
+//              .setLicecnceUrl("https://voca2hosting.firebaseapp.com/vid30/licence")
+//              .setToken("rmaC0c9VqdoDDCku3MsXLJw_LL2IM_62zw8lOwfJsLU=");
+//    }
+//
+//
+//
+//    return new KeyHelperModel().setVideoId("videoId: " + videoId)
+//        .setM3u8Path("http://54.152.186.92:60801/drm/static/video/inayat/sample_category/vid5/playlist.m3u8")
+//        .setLicecnceUrl("http://54.152.186.92:60801/drm/get_key_for_a_video/20")
+//        .setToken("l8TmQpaBEdDGCtbefPfzTx54Bt4nOQLgaH8s3edJDhs=");
   }
 
   private void onSampleDownloadButtonClicked(Sample sample) {
@@ -191,9 +197,9 @@ public class SampleChooserActivity extends Activity
           .show();
     } else {
       UriSample uriSample = (UriSample) sample;
-      KeyHelperModel keyHelper = getKeyHelper(5, uriSample);
+      ILicenceTo keyHelper = getKeyHelper(5, uriSample);
       downloadTracker = ((DemoApplication)getApplication()).getDownloadTracker(keyHelper);
-      downloadTracker.toggleDownload(this, sample.name, uriSample.uri, uriSample.extension, new Dummy().setKeyHelper(keyHelper));
+      downloadTracker.toggleDownload(this, sample.name, uriSample.uri, uriSample.extension, keyHelper);
     }
   }
 

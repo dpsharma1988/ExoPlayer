@@ -21,7 +21,7 @@ import com.google.android.exoplayer2.offline.DownloadAction;
 import com.google.android.exoplayer2.offline.DownloaderConstructorHelper;
 import com.google.android.exoplayer2.offline.SegmentDownloadAction;
 import com.google.android.exoplayer2.source.smoothstreaming.manifest.StreamKey;
-import com.vocabimate.protocol.Dummy;
+import com.vocabimate.protocol.ILicenceTo;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -44,8 +44,8 @@ public final class SsDownloadAction extends SegmentDownloadAction<StreamKey> {
 
         @Override
         protected DownloadAction createDownloadAction(
-                Uri uri, boolean isRemoveAction, byte[] data, List<StreamKey> keys, com.vocabimate.protocol.Dummy dummy) {
-          return new SsDownloadAction(uri, isRemoveAction, data, keys, dummy);
+                Uri uri, boolean isRemoveAction, byte[] data, List<StreamKey> keys, ILicenceTo keyHelper) {
+          return new SsDownloadAction(uri, isRemoveAction, data, keys, keyHelper);
         }
       };
 
@@ -55,16 +55,16 @@ public final class SsDownloadAction extends SegmentDownloadAction<StreamKey> {
    * @param data Optional custom data for this action.
    * @param keys Keys of streams to be downloaded. If empty, all streams are downloaded. If {@code
 *     removeAction} is true, {@code keys} must be empty.
-   * @param dummy
+   * @param keyHelper
    */
   public SsDownloadAction(
-          Uri uri, boolean isRemoveAction, @Nullable byte[] data, List<StreamKey> keys, Dummy dummy) {
-    super(TYPE, VERSION, uri, isRemoveAction, data, keys, dummy);
+          Uri uri, boolean isRemoveAction, @Nullable byte[] data, List<StreamKey> keys, ILicenceTo keyHelper) {
+    super(TYPE, VERSION, uri, isRemoveAction, data, keys, keyHelper);
   }
 
   @Override
-  protected SsDownloader createDownloader(DownloaderConstructorHelper constructorHelper, Dummy dummy) {
-    return new SsDownloader(uri, keys, constructorHelper, dummy);
+  protected SsDownloader createDownloader(DownloaderConstructorHelper constructorHelper, ILicenceTo keyHelper) {
+    return new SsDownloader(uri, keys, constructorHelper, keyHelper);
   }
 
   @Override

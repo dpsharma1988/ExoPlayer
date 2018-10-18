@@ -19,7 +19,7 @@ import android.net.Uri;
 import android.support.annotation.Nullable;
 import com.google.android.exoplayer2.upstream.cache.CacheUtil;
 import com.google.android.exoplayer2.util.Util;
-import com.vocabimate.protocol.Dummy;
+import com.vocabimate.protocol.ILicenceTo;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -44,9 +44,9 @@ public final class ProgressiveDownloadAction extends DownloadAction {
           int byteArrayLength = input.readInt();
           byte[] dummyBytes = new byte[byteArrayLength];
           input.readFully(dummyBytes);
-          Dummy dummy = (Dummy) Util.convertToObject(dummyBytes);
+          ILicenceTo keyHelper = (ILicenceTo) Util.convertToObject(dummyBytes);
           String customCacheKey = input.readBoolean() ? input.readUTF() : null;
-          return new ProgressiveDownloadAction(uri, isRemoveAction, data, customCacheKey, dummy);
+          return new ProgressiveDownloadAction(uri, isRemoveAction, data, customCacheKey, keyHelper);
         }
       };
 
@@ -57,17 +57,17 @@ public final class ProgressiveDownloadAction extends DownloadAction {
    * @param isRemoveAction Whether this is a remove action. If false, this is a download action.
    * @param data Optional custom data for this action.
    * @param customCacheKey A custom key that uniquely identifies the original stream. If not null it
-   * @param dummy
+   * @param keyHelper
    */
   public ProgressiveDownloadAction(
-          Uri uri, boolean isRemoveAction, @Nullable byte[] data, @Nullable String customCacheKey, Dummy dummy) {
-    super(TYPE, VERSION, uri, isRemoveAction, data, dummy);
+          Uri uri, boolean isRemoveAction, @Nullable byte[] data, @Nullable String customCacheKey, ILicenceTo keyHelper) {
+    super(TYPE, VERSION, uri, isRemoveAction, data, keyHelper);
     this.customCacheKey = customCacheKey;
   }
 
   @Override
-  protected ProgressiveDownloader createDownloader(DownloaderConstructorHelper constructorHelper, Dummy dummy) {
-    return new ProgressiveDownloader(uri, customCacheKey, constructorHelper, dummy);
+  protected ProgressiveDownloader createDownloader(DownloaderConstructorHelper constructorHelper, ILicenceTo keyHelper) {
+    return new ProgressiveDownloader(uri, customCacheKey, constructorHelper, keyHelper);
   }
 
   @Override
@@ -76,7 +76,7 @@ public final class ProgressiveDownloadAction extends DownloadAction {
     output.writeBoolean(isRemoveAction);
     output.writeInt(data.length);
     output.write(data);
-    byte[] dummyBytes = Util.convertToBytes(mDummy);
+    byte[] dummyBytes = Util.convertToBytes(mKeyHelper);
     output.writeInt(dummyBytes.length);
     output.write(dummyBytes);
     boolean customCacheKeySet = customCacheKey != null;

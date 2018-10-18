@@ -37,7 +37,7 @@ public final class DummyDataSource implements DataSource {
 
   @Override
   public long open(DataSpec dataSpec) throws IOException {
-    throw new IOException("Dummy source");
+    throw new IOException("ILicenceTo source");
   }
 
   @Override

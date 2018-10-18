@@ -21,7 +21,7 @@ import com.google.android.exoplayer2.offline.DownloadAction;
 import com.google.android.exoplayer2.offline.DownloaderConstructorHelper;
 import com.google.android.exoplayer2.offline.SegmentDownloadAction;
 import com.google.android.exoplayer2.source.hls.playlist.RenditionKey;
-import com.vocabimate.protocol.Dummy;
+import com.vocabimate.protocol.ILicenceTo;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -46,8 +46,8 @@ public final class HlsDownloadAction extends SegmentDownloadAction<RenditionKey>
 
         @Override
         protected DownloadAction createDownloadAction(
-                Uri uri, boolean isRemoveAction, byte[] data, List<RenditionKey> keys, Dummy dummy) {
-          return new HlsDownloadAction(uri, isRemoveAction, data, keys, dummy);
+                Uri uri, boolean isRemoveAction, byte[] data, List<RenditionKey> keys, ILicenceTo keyHelper) {
+          return new HlsDownloadAction(uri, isRemoveAction, data, keys, keyHelper);
         }
       };
 
@@ -57,16 +57,16 @@ public final class HlsDownloadAction extends SegmentDownloadAction<RenditionKey>
    * @param data Optional custom data for this action.
    * @param keys Keys of renditions to be downloaded. If empty, all renditions are downloaded. If
 *     {@code removeAction} is true, {@code keys} must empty.
-   * @param dummy
+   * @param keyHelper
    */
   public HlsDownloadAction(
-          Uri uri, boolean isRemoveAction, @Nullable byte[] data, List<RenditionKey> keys, Dummy dummy) {
-    super(TYPE, VERSION, uri, isRemoveAction, data, keys, dummy);
+          Uri uri, boolean isRemoveAction, @Nullable byte[] data, List<RenditionKey> keys, ILicenceTo keyHelper) {
+    super(TYPE, VERSION, uri, isRemoveAction, data, keys, keyHelper);
   }
 
   @Override
-  protected HlsDownloader createDownloader(DownloaderConstructorHelper constructorHelper, Dummy dummy) {
-    return new HlsDownloader(uri, keys, constructorHelper, dummy);
+  protected HlsDownloader createDownloader(DownloaderConstructorHelper constructorHelper, ILicenceTo keyHelper) {
+    return new HlsDownloader(uri, keys, constructorHelper, keyHelper);
   }
 
   @Override

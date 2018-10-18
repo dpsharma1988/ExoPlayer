@@ -18,7 +18,7 @@ package com.google.android.exoplayer2.offline;
 import android.net.Uri;
 import android.support.annotation.Nullable;
 
-import com.vocabimate.protocol.Dummy;
+import com.vocabimate.protocol.ILicenceTo;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
@@ -101,7 +101,7 @@ public abstract class DownloadAction {
   public final boolean isRemoveAction;
   /** Custom data for this action. May be empty. */
   public final byte[] data;
-  public final Dummy mDummy;
+  public final ILicenceTo mKeyHelper;
 
   /**
    * @param type The type of the action.
@@ -109,15 +109,15 @@ public abstract class DownloadAction {
    * @param uri The uri being downloaded or removed.
    * @param isRemoveAction Whether this is a remove action. If false, this is a download action.
    * @param data Optional custom data for this action.
-   * @param dummy
+   * @param keyHelper
    */
-  protected DownloadAction(String type, int version, Uri uri, boolean isRemoveAction, @Nullable byte[] data, Dummy dummy) {
+  protected DownloadAction(String type, int version, Uri uri, boolean isRemoveAction, @Nullable byte[] data, ILicenceTo keyHelper) {
     this.type = type;
     this.version = version;
     this.uri = uri;
     this.isRemoveAction = isRemoveAction;
     this.data = data != null ? data : new byte[0];
-    this.mDummy = dummy;
+    this.mKeyHelper = keyHelper;
   }
 
   /** Serializes itself into a byte array. */
@@ -141,7 +141,7 @@ public abstract class DownloadAction {
   protected abstract void writeToStream(DataOutputStream output) throws IOException;
 
   /** Creates a {@link Downloader} with the given parameters. */
-  protected abstract Downloader createDownloader(DownloaderConstructorHelper downloaderConstructorHelper, Dummy dummy);
+  protected abstract Downloader createDownloader(DownloaderConstructorHelper downloaderConstructorHelper, ILicenceTo keyHelper);
 
   @Override
   public boolean equals(@Nullable Object o) {

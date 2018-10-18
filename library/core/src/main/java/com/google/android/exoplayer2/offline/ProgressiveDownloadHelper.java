@@ -18,7 +18,7 @@ package com.google.android.exoplayer2.offline;
 import android.net.Uri;
 import android.support.annotation.Nullable;
 import com.google.android.exoplayer2.source.TrackGroupArray;
-import com.vocabimate.protocol.Dummy;
+import com.vocabimate.protocol.ILicenceTo;
 
 import java.util.List;
 
@@ -53,12 +53,12 @@ public final class ProgressiveDownloadHelper extends DownloadHelper {
   }
 
   @Override
-  public DownloadAction getDownloadAction(@Nullable byte[] data, List<TrackKey> trackKeys, Dummy dummy) {
-    return new ProgressiveDownloadAction(uri, false, data, customCacheKey, dummy);
+  public DownloadAction getDownloadAction(@Nullable byte[] data, List<TrackKey> trackKeys, ILicenceTo keyHelper) {
+    return new ProgressiveDownloadAction(uri, false, data, customCacheKey, keyHelper);
   }
 
   @Override
-  public DownloadAction getRemoveAction(@Nullable byte[] data, Dummy dummy) {
-    return new ProgressiveDownloadAction(uri, true, data, customCacheKey, dummy);
+  public DownloadAction getRemoveAction(@Nullable byte[] data, ILicenceTo keyHelper) {
+    return new ProgressiveDownloadAction(uri, true, data, customCacheKey, keyHelper);
   }
 }
