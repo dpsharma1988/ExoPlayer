@@ -4,7 +4,7 @@ import com.google.android.exoplayer2.upstream.DataSpec;
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSource;
 import com.google.android.exoplayer2.upstream.TransferListener;
 import com.google.android.exoplayer2.util.Predicate;
-import com.google.android.exoplayer2.vocab.KeyHelperModel;
+import com.vocabimate.protocol.KeyHelperModel;
 import com.google.gson.Gson;
 import com.vocabimate.protocol.LicenceModel;
 import com.vocabimate.protocol.TokenDecryptionHelper;

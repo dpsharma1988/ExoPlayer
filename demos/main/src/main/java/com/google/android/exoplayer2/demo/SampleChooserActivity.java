@@ -39,10 +39,10 @@ import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DataSourceInputStream;
 import com.google.android.exoplayer2.upstream.DataSpec;
 import com.google.android.exoplayer2.upstream.DefaultDataSource;
-import com.google.android.exoplayer2.upstream.TransferListener;
 import com.google.android.exoplayer2.util.Assertions;
 import com.google.android.exoplayer2.util.Util;
-import com.google.android.exoplayer2.vocab.KeyHelperModel;
+import com.vocabimate.protocol.KeyHelperModel;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -161,12 +161,21 @@ public class SampleChooserActivity extends Activity
 //        .setKeyPath(key)
 //        .setM3u8Path(sample.uri.toString());
 //
+    if(sample.uri.toString().contains("https://voca2hosting.firebaseapp.com/small_files/encrypted_without_key/index.m3u8")) {
+      return new KeyHelperModel().setVideoId("videoId: " + videoId)
+              .setM3u8Path("https://voca2hosting.firebaseapp.com/small_files/encrypted_without_key/index.m3u8")
+              .setLicecnceUrl("https://vocatest-a40ab.firebaseapp.com/small_files/enc.key")
+              .setToken(null);
+    }
+
     if(sample.uri.toString().contains("vid30")) {
       return new KeyHelperModel().setVideoId("videoId: " + videoId)
               .setM3u8Path("https://voca2hosting.firebaseapp.com/vid30/playlist.m3u8")
               .setLicecnceUrl("https://voca2hosting.firebaseapp.com/vid30/licence")
               .setToken("rmaC0c9VqdoDDCku3MsXLJw_LL2IM_62zw8lOwfJsLU=");
     }
+
+
 
     return new KeyHelperModel().setVideoId("videoId: " + videoId)
         .setM3u8Path("http://54.152.186.92:60801/drm/static/video/inayat/sample_category/vid5/playlist.m3u8")

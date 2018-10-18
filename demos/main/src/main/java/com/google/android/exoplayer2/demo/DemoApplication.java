@@ -35,7 +35,8 @@ import com.google.android.exoplayer2.upstream.cache.NoOpCacheEvictor;
 import com.google.android.exoplayer2.upstream.cache.SimpleCache;
 import com.google.android.exoplayer2.upstream.vocabimate_stream.CustomDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
-import com.google.android.exoplayer2.vocab.KeyHelperModel;
+import com.vocabimate.protocol.KeyHelperModel;
+
 import java.io.File;
 
 /**

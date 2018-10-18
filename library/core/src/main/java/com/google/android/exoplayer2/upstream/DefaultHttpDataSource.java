@@ -24,7 +24,8 @@ import com.google.android.exoplayer2.upstream.vocabimate_stream.CustomDataSource
 import com.google.android.exoplayer2.util.Assertions;
 import com.google.android.exoplayer2.util.Predicate;
 import com.google.android.exoplayer2.util.Util;
-import com.google.android.exoplayer2.vocab.KeyHelperModel;
+import com.vocabimate.protocol.KeyHelperModel;
+import com.vocabimate.protocol.VocabimateHttpUrlConnection;
 
 import java.io.EOFException;
 import java.io.IOException;
@@ -406,6 +407,9 @@ public class DefaultHttpDataSource implements HttpDataSource {
 
       if(this instanceof CustomDataSource){
         KeyHelperModel keyHelperModel = ((CustomDataSource) this).getKeyHelperModel();
+        if(connection instanceof VocabimateHttpUrlConnection){
+          ((VocabimateHttpUrlConnection)connection).setKeyHelper(keyHelperModel);
+        }
         if(keyHelperModel != null) {
           String token = keyHelperModel.getToken();
           if(token != null && token.length() > 0) {

@@ -1,4 +1,4 @@
-package com.google.android.exoplayer2.vocab;
+package com.vocabimate.protocol;
 
 import java.io.Serializable;
 

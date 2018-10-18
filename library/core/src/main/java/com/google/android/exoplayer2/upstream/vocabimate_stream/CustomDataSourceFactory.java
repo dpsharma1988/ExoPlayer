@@ -21,7 +21,7 @@ import com.google.android.exoplayer2.upstream.HttpDataSource;
 import com.google.android.exoplayer2.upstream.HttpDataSource.BaseFactory;
 import com.google.android.exoplayer2.upstream.HttpDataSource.Factory;
 import com.google.android.exoplayer2.upstream.TransferListener;
-import com.google.android.exoplayer2.vocab.KeyHelperModel;
+import com.vocabimate.protocol.KeyHelperModel;
 
 /**
  * A {@link Factory} that produces {@link DefaultHttpDataSource} instances.
