@@ -21,6 +21,8 @@ import com.google.android.exoplayer2.offline.DownloadAction;
 import com.google.android.exoplayer2.offline.DownloaderConstructorHelper;
 import com.google.android.exoplayer2.offline.SegmentDownloadAction;
 import com.google.android.exoplayer2.source.hls.playlist.RenditionKey;
+import com.vocabimate.protocol.Dummy;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -44,8 +46,8 @@ public final class HlsDownloadAction extends SegmentDownloadAction<RenditionKey>
 
         @Override
         protected DownloadAction createDownloadAction(
-            Uri uri, boolean isRemoveAction, byte[] data, List<RenditionKey> keys) {
-          return new HlsDownloadAction(uri, isRemoveAction, data, keys);
+                Uri uri, boolean isRemoveAction, byte[] data, List<RenditionKey> keys, Dummy dummy) {
+          return new HlsDownloadAction(uri, isRemoveAction, data, keys, dummy);
         }
       };
 
@@ -54,16 +56,17 @@ public final class HlsDownloadAction extends SegmentDownloadAction<RenditionKey>
    * @param isRemoveAction Whether the data will be removed. If {@code false} it will be downloaded.
    * @param data Optional custom data for this action.
    * @param keys Keys of renditions to be downloaded. If empty, all renditions are downloaded. If
-   *     {@code removeAction} is true, {@code keys} must empty.
+*     {@code removeAction} is true, {@code keys} must empty.
+   * @param dummy
    */
   public HlsDownloadAction(
-      Uri uri, boolean isRemoveAction, @Nullable byte[] data, List<RenditionKey> keys) {
-    super(TYPE, VERSION, uri, isRemoveAction, data, keys);
+          Uri uri, boolean isRemoveAction, @Nullable byte[] data, List<RenditionKey> keys, Dummy dummy) {
+    super(TYPE, VERSION, uri, isRemoveAction, data, keys, dummy);
   }
 
   @Override
-  protected HlsDownloader createDownloader(DownloaderConstructorHelper constructorHelper) {
-    return new HlsDownloader(uri, keys, constructorHelper);
+  protected HlsDownloader createDownloader(DownloaderConstructorHelper constructorHelper, Dummy dummy) {
+    return new HlsDownloader(uri, keys, constructorHelper, dummy);
   }
 
   @Override

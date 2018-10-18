@@ -15,8 +15,8 @@ public class TokenDecryptionHelper {
     public byte[] decrypt(){
 
         String key = token.substring(0, 16);
-//        String iv = token.substring(token.length() - 16, token.length());
-        String iv = token.substring(token.length() - 17, token.length() - 1); // abcdefgh
+        String iv = token.substring(token.length() - 16, token.length());
+//        String iv = token.substring(token.length() - 17, token.length() - 1); // abcdefgh
         byte[] keyBytes = tokenEncryptedStringFromByteArray.getBytes();
         byte[] decryptKey = AesEncryptionUtil.decrypt(key, iv, keyBytes);
         return decryptKey;

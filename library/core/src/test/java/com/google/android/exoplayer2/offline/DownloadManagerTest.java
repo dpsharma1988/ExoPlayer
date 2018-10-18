@@ -500,7 +500,7 @@ public class DownloadManagerTest {
     private final FakeDownloader downloader;
 
     private FakeDownloadAction(Uri uri, boolean isRemoveAction) {
-      super("Fake", /* version= */ 0, uri, isRemoveAction, /* data= */ null);
+      super("Fake", /* version= */ 0, uri, isRemoveAction, /* data= */ null, dummy);
       this.downloader = new FakeDownloader(isRemoveAction);
     }
 

@@ -18,6 +18,9 @@ public class VocabimateHttpUrlConnection extends HttpURLConnection {
     protected VocAbsInputStream vocAbsInputStream;
     private KeyHelperModel keyHelper;
 
+    /**
+     * @see com.vocabimate.protocol.VocabimateInputStream VocabimateInputStream
+     */
     public VocabimateHttpUrlConnection(URL url) throws IOException {
         super(url);
         try {
@@ -43,10 +46,10 @@ public class VocabimateHttpUrlConnection extends HttpURLConnection {
         URL url = new URL(licence_url);
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
-        if(token == null){
+        if (token == null) {
             vocAbsInputStream.setInputStream(connection.getInputStream());
         }
-        if(token != null) {
+        if (token != null) {
             String result = readStream(connection.getInputStream());
             LicenceModel licenceModel = new Gson().fromJson(result, LicenceModel.class);
             InputStream stream = null;
@@ -57,11 +60,16 @@ public class VocabimateHttpUrlConnection extends HttpURLConnection {
 //            for (int i = 0; i < decrypt.length; i++) {
 //                buffer[i] = decrypt[i];
 //            }
-            vocAbsInputStream.setInputStream(stream);
+                vocAbsInputStream.setInputStream(stream);
             }
         }
         connected = true;
         responseCode = 200;
+    }
+
+    @Override
+    public int getResponseCode() throws IOException {
+        return responseCode;
     }
 
     private String readStream(InputStream in) {
@@ -89,7 +97,7 @@ public class VocabimateHttpUrlConnection extends HttpURLConnection {
 
     @Override
     public String getContentType() {
-        return super.getContentType(); // application/pgp-keys
+        return "application/pgp-keys";
     }
 
     @Override
@@ -110,11 +118,11 @@ public class VocabimateHttpUrlConnection extends HttpURLConnection {
         return vocAbsInputStream;
     }
 
-    public void setKeyHelper(KeyHelperModel keyHelper) {
-        this.keyHelper = keyHelper;
-    }
-
     public KeyHelperModel getKeyHelper() {
         return keyHelper;
+    }
+
+    public void setKeyHelper(KeyHelperModel keyHelper) {
+        this.keyHelper = keyHelper;
     }
 }

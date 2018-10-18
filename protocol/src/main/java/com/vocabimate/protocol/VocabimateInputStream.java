@@ -4,7 +4,8 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /**
- * Created by Hisham on 15/Oct/2018 - 17:55
+ * Class is being used using reflection
+ * @see VocabimateHttpUrlConnection
  */
 public class VocabimateInputStream extends VocAbsInputStream {
     @Override

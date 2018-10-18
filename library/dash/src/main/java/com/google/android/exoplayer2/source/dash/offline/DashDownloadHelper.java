@@ -86,15 +86,15 @@ public final class DashDownloadHelper extends DownloadHelper {
   }
 
   @Override
-  public DashDownloadAction getDownloadAction(@Nullable byte[] data, List<TrackKey> trackKeys) {
+  public DashDownloadAction getDownloadAction(@Nullable byte[] data, List<TrackKey> trackKeys, com.vocabimate.protocol.Dummy dummy) {
     return new DashDownloadAction(
-        uri, /* isRemoveAction= */ false, data, toRepresentationKeys(trackKeys));
+        uri, /* isRemoveAction= */ false, data, toRepresentationKeys(trackKeys), dummy);
   }
 
   @Override
-  public DashDownloadAction getRemoveAction(@Nullable byte[] data) {
+  public DashDownloadAction getRemoveAction(@Nullable byte[] data, com.vocabimate.protocol.Dummy dummy) {
     return new DashDownloadAction(
-        uri, /* isRemoveAction= */ true, data, Collections.<RepresentationKey>emptyList());
+        uri, /* isRemoveAction= */ true, data, Collections.<RepresentationKey>emptyList(), dummy);
   }
 
   private static List<RepresentationKey> toRepresentationKeys(List<TrackKey> trackKeys) {

@@ -29,6 +29,8 @@ import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DataSpec;
 import com.google.android.exoplayer2.upstream.ParsingLoadable;
 import com.google.android.exoplayer2.util.UriUtil;
+import com.vocabimate.protocol.Dummy;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -64,12 +66,13 @@ public final class HlsDownloader extends SegmentDownloader<HlsPlaylist, Renditio
    * @param renditionKeys Keys defining which renditions in the playlist should be selected for
    *     download. If empty, all renditions are downloaded.
    * @param constructorHelper A {@link DownloaderConstructorHelper} instance.
+   * @param dummy
    */
   public HlsDownloader(
-      Uri playlistUri,
-      List<RenditionKey> renditionKeys,
-      DownloaderConstructorHelper constructorHelper) {
-    super(playlistUri, renditionKeys, constructorHelper);
+          Uri playlistUri,
+          List<RenditionKey> renditionKeys,
+          DownloaderConstructorHelper constructorHelper, Dummy dummy) {
+    super(playlistUri, renditionKeys, constructorHelper, dummy);
   }
 
   @Override

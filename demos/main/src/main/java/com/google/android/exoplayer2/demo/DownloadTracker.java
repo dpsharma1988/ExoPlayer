@@ -47,6 +47,8 @@ import com.google.android.exoplayer2.ui.DefaultTrackNameProvider;
 import com.google.android.exoplayer2.ui.TrackNameProvider;
 import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.util.Util;
+import com.vocabimate.protocol.Dummy;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -122,10 +124,13 @@ public class DownloadTracker implements DownloadManager.Listener {
     return Collections.emptyList();
   }
 
-  public void toggleDownload(Activity activity, String name, Uri uri, String extension) {
+  private Dummy mDummy;
+
+  public void toggleDownload(Activity activity, String name, Uri uri, String extension, Dummy dummy) {
+    this.mDummy = dummy;
     if (isDownloaded(uri)) {
       DownloadAction removeAction =
-          getDownloadHelper(uri, extension).getRemoveAction(Util.getUtf8Bytes(name));
+          getDownloadHelper(uri, extension).getRemoveAction(Util.getUtf8Bytes(name), dummy);
       startServiceWithAction(removeAction);
     } else {
       StartDownloadDialogHelper helper =
@@ -295,7 +300,7 @@ public class DownloadTracker implements DownloadManager.Listener {
       if (!selectedTrackKeys.isEmpty() || trackKeys.isEmpty()) {
         // We have selected keys, or we're dealing with single stream content.
         DownloadAction downloadAction =
-            downloadHelper.getDownloadAction(Util.getUtf8Bytes(name), selectedTrackKeys);
+            downloadHelper.getDownloadAction(Util.getUtf8Bytes(name), selectedTrackKeys, mDummy);
         startDownload(downloadAction);
       }
     }

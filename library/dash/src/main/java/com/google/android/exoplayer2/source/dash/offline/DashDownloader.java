@@ -33,6 +33,8 @@ import com.google.android.exoplayer2.source.dash.manifest.Representation;
 import com.google.android.exoplayer2.source.dash.manifest.RepresentationKey;
 import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DataSpec;
+import com.vocabimate.protocol.Dummy;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -68,12 +70,13 @@ public final class DashDownloader extends SegmentDownloader<DashManifest, Repres
    * @param representationKeys Keys defining which representations in the manifest should be
    *     selected for download. If empty, all representations are downloaded.
    * @param constructorHelper A {@link DownloaderConstructorHelper} instance.
+   * @param dummy
    */
   public DashDownloader(
-      Uri manifestUri,
-      List<RepresentationKey> representationKeys,
-      DownloaderConstructorHelper constructorHelper) {
-    super(manifestUri, representationKeys, constructorHelper);
+          Uri manifestUri,
+          List<RepresentationKey> representationKeys,
+          DownloaderConstructorHelper constructorHelper, Dummy dummy) {
+    super(manifestUri, representationKeys, constructorHelper, dummy);
   }
 
   @Override

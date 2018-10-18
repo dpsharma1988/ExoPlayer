@@ -41,6 +41,7 @@ import com.google.android.exoplayer2.upstream.DataSpec;
 import com.google.android.exoplayer2.upstream.DefaultDataSource;
 import com.google.android.exoplayer2.util.Assertions;
 import com.google.android.exoplayer2.util.Util;
+import com.vocabimate.protocol.Dummy;
 import com.vocabimate.protocol.KeyHelperModel;
 
 import java.io.IOException;
@@ -192,7 +193,7 @@ public class SampleChooserActivity extends Activity
       UriSample uriSample = (UriSample) sample;
       KeyHelperModel keyHelper = getKeyHelper(5, uriSample);
       downloadTracker = ((DemoApplication)getApplication()).getDownloadTracker(keyHelper);
-      downloadTracker.toggleDownload(this, sample.name, uriSample.uri, uriSample.extension);
+      downloadTracker.toggleDownload(this, sample.name, uriSample.uri, uriSample.extension, new Dummy().setKeyHelper(keyHelper));
     }
   }
 

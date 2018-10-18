@@ -200,6 +200,6 @@ public class DashDownloadActionTest {
       Uri uri, boolean isRemoveAction, @Nullable byte[] data, RepresentationKey... keys) {
     ArrayList<RepresentationKey> keysList = new ArrayList<>();
     Collections.addAll(keysList, keys);
-    return new DashDownloadAction(uri, isRemoveAction, data, keysList);
+    return new DashDownloadAction(uri, isRemoveAction, data, keysList, dummy);
   }
 }

@@ -49,20 +49,20 @@ public class ProgressiveDownloadActionTest {
 
   @Test
   public void testDownloadActionIsNotRemoveAction() throws Exception {
-    ProgressiveDownloadAction action = new ProgressiveDownloadAction(uri1, false, null, null);
+    ProgressiveDownloadAction action = new ProgressiveDownloadAction(uri1, false, null, null, dummy);
     assertThat(action.isRemoveAction).isFalse();
   }
 
   @Test
   public void testRemoveActionisRemoveAction() throws Exception {
-    ProgressiveDownloadAction action2 = new ProgressiveDownloadAction(uri1, true, null, null);
+    ProgressiveDownloadAction action2 = new ProgressiveDownloadAction(uri1, true, null, null, dummy);
     assertThat(action2.isRemoveAction).isTrue();
   }
 
   @Test
   public void testCreateDownloader() throws Exception {
     MockitoAnnotations.initMocks(this);
-    ProgressiveDownloadAction action = new ProgressiveDownloadAction(uri1, false, null, null);
+    ProgressiveDownloadAction action = new ProgressiveDownloadAction(uri1, false, null, null, dummy);
     DownloaderConstructorHelper constructorHelper = new DownloaderConstructorHelper(
         Mockito.mock(Cache.class), DummyDataSource.FACTORY);
     assertThat(action.createDownloader(constructorHelper)).isNotNull();
@@ -70,75 +70,75 @@ public class ProgressiveDownloadActionTest {
 
   @Test
   public void testSameUriCacheKeyDifferentAction_IsSameMedia() throws Exception {
-    ProgressiveDownloadAction action1 = new ProgressiveDownloadAction(uri1, true, null, null);
-    ProgressiveDownloadAction action2 = new ProgressiveDownloadAction(uri1, false, null, null);
+    ProgressiveDownloadAction action1 = new ProgressiveDownloadAction(uri1, true, null, null, dummy);
+    ProgressiveDownloadAction action2 = new ProgressiveDownloadAction(uri1, false, null, null, dummy);
     assertSameMedia(action1, action2);
   }
 
   @Test
   public void testNullCacheKeyDifferentUriAction_IsNotSameMedia() throws Exception {
-    ProgressiveDownloadAction action3 = new ProgressiveDownloadAction(uri2, true, null, null);
-    ProgressiveDownloadAction action4 = new ProgressiveDownloadAction(uri1, false, null, null);
+    ProgressiveDownloadAction action3 = new ProgressiveDownloadAction(uri2, true, null, null, dummy);
+    ProgressiveDownloadAction action4 = new ProgressiveDownloadAction(uri1, false, null, null, dummy);
     assertNotSameMedia(action3, action4);
   }
 
   @Test
   public void testSameCacheKeyDifferentUriAction_IsSameMedia() throws Exception {
-    ProgressiveDownloadAction action5 = new ProgressiveDownloadAction(uri2, true, null, "key");
-    ProgressiveDownloadAction action6 = new ProgressiveDownloadAction(uri1, false, null, "key");
+    ProgressiveDownloadAction action5 = new ProgressiveDownloadAction(uri2, true, null, "key", dummy);
+    ProgressiveDownloadAction action6 = new ProgressiveDownloadAction(uri1, false, null, "key", dummy);
     assertSameMedia(action5, action6);
   }
 
   @Test
   public void testSameUriDifferentCacheKeyAction_IsNotSameMedia() throws Exception {
-    ProgressiveDownloadAction action7 = new ProgressiveDownloadAction(uri1, true, null, "key");
-    ProgressiveDownloadAction action8 = new ProgressiveDownloadAction(uri1, false, null, "key2");
+    ProgressiveDownloadAction action7 = new ProgressiveDownloadAction(uri1, true, null, "key", dummy);
+    ProgressiveDownloadAction action8 = new ProgressiveDownloadAction(uri1, false, null, "key2", dummy);
     assertNotSameMedia(action7, action8);
   }
 
   @Test
   public void testSameUriNullCacheKeyAction_IsNotSameMedia() throws Exception {
-    ProgressiveDownloadAction action1 = new ProgressiveDownloadAction(uri1, true, null, "key");
-    ProgressiveDownloadAction action2 = new ProgressiveDownloadAction(uri1, false, null, null);
+    ProgressiveDownloadAction action1 = new ProgressiveDownloadAction(uri1, true, null, "key", dummy);
+    ProgressiveDownloadAction action2 = new ProgressiveDownloadAction(uri1, false, null, null, dummy);
     assertNotSameMedia(action1, action2);
   }
 
   @Test
   public void testEquals() throws Exception {
-    ProgressiveDownloadAction action1 = new ProgressiveDownloadAction(uri1, true, null, null);
+    ProgressiveDownloadAction action1 = new ProgressiveDownloadAction(uri1, true, null, null, dummy);
     assertThat(action1.equals(action1)).isTrue();
 
-    ProgressiveDownloadAction action2 = new ProgressiveDownloadAction(uri1, true, null, null);
-    ProgressiveDownloadAction action3 = new ProgressiveDownloadAction(uri1, true, null, null);
+    ProgressiveDownloadAction action2 = new ProgressiveDownloadAction(uri1, true, null, null, dummy);
+    ProgressiveDownloadAction action3 = new ProgressiveDownloadAction(uri1, true, null, null, dummy);
     assertThat(action2.equals(action3)).isTrue();
 
-    ProgressiveDownloadAction action4 = new ProgressiveDownloadAction(uri1, true, null, null);
-    ProgressiveDownloadAction action5 = new ProgressiveDownloadAction(uri1, false, null, null);
+    ProgressiveDownloadAction action4 = new ProgressiveDownloadAction(uri1, true, null, null, dummy);
+    ProgressiveDownloadAction action5 = new ProgressiveDownloadAction(uri1, false, null, null, dummy);
     assertThat(action4.equals(action5)).isFalse();
 
-    ProgressiveDownloadAction action6 = new ProgressiveDownloadAction(uri1, true, null, null);
-    ProgressiveDownloadAction action7 = new ProgressiveDownloadAction(uri1, true, null, "key");
+    ProgressiveDownloadAction action6 = new ProgressiveDownloadAction(uri1, true, null, null, dummy);
+    ProgressiveDownloadAction action7 = new ProgressiveDownloadAction(uri1, true, null, "key", dummy);
     assertThat(action6.equals(action7)).isFalse();
 
-    ProgressiveDownloadAction action8 = new ProgressiveDownloadAction(uri1, true, null, "key2");
-    ProgressiveDownloadAction action9 = new ProgressiveDownloadAction(uri1, true, null, "key");
+    ProgressiveDownloadAction action8 = new ProgressiveDownloadAction(uri1, true, null, "key2", dummy);
+    ProgressiveDownloadAction action9 = new ProgressiveDownloadAction(uri1, true, null, "key", dummy);
     assertThat(action8.equals(action9)).isFalse();
 
-    ProgressiveDownloadAction action10 = new ProgressiveDownloadAction(uri1, true, null, null);
-    ProgressiveDownloadAction action11 = new ProgressiveDownloadAction(uri2, true, null, null);
+    ProgressiveDownloadAction action10 = new ProgressiveDownloadAction(uri1, true, null, null, dummy);
+    ProgressiveDownloadAction action11 = new ProgressiveDownloadAction(uri2, true, null, null, dummy);
     assertThat(action10.equals(action11)).isFalse();
   }
 
   @Test
   public void testSerializerGetType() throws Exception {
-    ProgressiveDownloadAction action = new ProgressiveDownloadAction(uri1, false, null, null);
+    ProgressiveDownloadAction action = new ProgressiveDownloadAction(uri1, false, null, null, dummy);
     assertThat(action.type).isNotNull();
   }
 
   @Test
   public void testSerializerWriteRead() throws Exception {
-    doTestSerializationRoundTrip(new ProgressiveDownloadAction(uri1, false, null, null));
-    doTestSerializationRoundTrip(new ProgressiveDownloadAction(uri2, true, null, "key"));
+    doTestSerializationRoundTrip(new ProgressiveDownloadAction(uri1, false, null, null, dummy));
+    doTestSerializationRoundTrip(new ProgressiveDownloadAction(uri2, true, null, "key", dummy));
   }
 
   private void assertSameMedia(

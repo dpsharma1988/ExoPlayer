@@ -21,6 +21,8 @@ import com.google.android.exoplayer2.offline.DownloadAction;
 import com.google.android.exoplayer2.offline.DownloaderConstructorHelper;
 import com.google.android.exoplayer2.offline.SegmentDownloadAction;
 import com.google.android.exoplayer2.source.dash.manifest.RepresentationKey;
+import com.vocabimate.protocol.Dummy;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -42,8 +44,8 @@ public final class DashDownloadAction extends SegmentDownloadAction<Representati
 
         @Override
         protected DownloadAction createDownloadAction(
-            Uri uri, boolean isRemoveAction, byte[] data, List<RepresentationKey> keys) {
-          return new DashDownloadAction(uri, isRemoveAction, data, keys);
+                Uri uri, boolean isRemoveAction, byte[] data, List<RepresentationKey> keys, com.vocabimate.protocol.Dummy dummy) {
+          return new DashDownloadAction(uri, isRemoveAction, data, keys, dummy);
         }
       };
 
@@ -52,16 +54,17 @@ public final class DashDownloadAction extends SegmentDownloadAction<Representati
    * @param isRemoveAction Whether the data will be removed. If {@code false} it will be downloaded.
    * @param data Optional custom data for this action.
    * @param keys Keys of representations to be downloaded. If empty, all representations are
-   *     downloaded. If {@code removeAction} is true, {@code keys} must be empty.
+*     downloaded. If {@code removeAction} is true, {@code keys} must be empty.
+   * @param dummy
    */
   public DashDownloadAction(
-      Uri uri, boolean isRemoveAction, @Nullable byte[] data, List<RepresentationKey> keys) {
-    super(TYPE, VERSION, uri, isRemoveAction, data, keys);
+          Uri uri, boolean isRemoveAction, @Nullable byte[] data, List<RepresentationKey> keys, Dummy dummy) {
+    super(TYPE, VERSION, uri, isRemoveAction, data, keys, dummy);
   }
 
   @Override
-  protected DashDownloader createDownloader(DownloaderConstructorHelper constructorHelper) {
-    return new DashDownloader(uri, keys, constructorHelper);
+  protected DashDownloader createDownloader(DownloaderConstructorHelper constructorHelper, Dummy dummy) {
+    return new DashDownloader(uri, keys, constructorHelper, dummy);
   }
 
   @Override

@@ -40,11 +40,17 @@ import com.google.android.exoplayer2.Format;
 import com.google.android.exoplayer2.ParserException;
 import com.google.android.exoplayer2.SeekParameters;
 import com.google.android.exoplayer2.upstream.DataSource;
+
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.ObjectInput;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutput;
+import java.io.ObjectOutputStream;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.nio.charset.Charset;
@@ -1588,5 +1594,50 @@ public final class Util {
       0X9E7D9662, 0X933EB0BB, 0X97FFAD0C, 0XAFB010B1, 0XAB710D06, 0XA6322BDF, 0XA2F33668,
       0XBCB4666D, 0XB8757BDA, 0XB5365D03, 0XB1F740B4
   };
+
+
+  public static byte[] convertToBytes(Object object) {
+    ByteArrayOutputStream bos = new ByteArrayOutputStream();
+    ObjectOutput out = null;
+    try {
+      out = new ObjectOutputStream(bos);
+      out.writeObject(object);
+      out.flush();
+      return bos.toByteArray();
+    } catch (IOException e) {
+      e.printStackTrace();
+    } finally {
+      try {
+        bos.close();
+      } catch (IOException ex) {
+        // ignore close exception
+      }
+    }
+    return null;
+  }
+
+  public static Object convertToObject(byte[] yourBytes) {
+    ByteArrayInputStream bis = new ByteArrayInputStream(yourBytes);
+    ObjectInput in = null;
+    try {
+      in = new ObjectInputStream(bis);
+      Object o = in.readObject();
+      return o;
+    } catch (IOException e) {
+      e.printStackTrace();
+    } catch (ClassNotFoundException e) {
+      e.printStackTrace();
+    } finally {
+      try {
+        if (in != null) {
+          in.close();
+        }
+      } catch (IOException ex) {
+        // ignore close exception
+      }
+    }
+    return null;
+  }
+
 
 }

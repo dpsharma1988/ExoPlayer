@@ -248,7 +248,7 @@ public class ActionFileTest {
     public static final int VERSION = 0;
 
     private FakeDownloadAction(String type, byte[] data) {
-      super(type, VERSION, Uri.parse("http://test.com"), /* isRemoveAction= */ false, data);
+      super(type, VERSION, Uri.parse("http://test.com"), /* isRemoveAction= */ false, data, dummy);
     }
 
     @Override

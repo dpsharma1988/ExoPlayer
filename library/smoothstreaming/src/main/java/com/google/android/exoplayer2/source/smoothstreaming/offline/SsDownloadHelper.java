@@ -76,14 +76,14 @@ public final class SsDownloadHelper extends DownloadHelper {
   }
 
   @Override
-  public SsDownloadAction getDownloadAction(@Nullable byte[] data, List<TrackKey> trackKeys) {
-    return new SsDownloadAction(uri, /* isRemoveAction= */ false, data, toStreamKeys(trackKeys));
+  public SsDownloadAction getDownloadAction(@Nullable byte[] data, List<TrackKey> trackKeys, com.vocabimate.protocol.Dummy dummy) {
+    return new SsDownloadAction(uri, /* isRemoveAction= */ false, data, toStreamKeys(trackKeys), dummy);
   }
 
   @Override
-  public SsDownloadAction getRemoveAction(@Nullable byte[] data) {
+  public SsDownloadAction getRemoveAction(@Nullable byte[] data, com.vocabimate.protocol.Dummy dummy) {
     return new SsDownloadAction(
-        uri, /* isRemoveAction= */ true, data, Collections.<StreamKey>emptyList());
+        uri, /* isRemoveAction= */ true, data, Collections.<StreamKey>emptyList(), dummy);
   }
 
   private static List<StreamKey> toStreamKeys(List<TrackKey> trackKeys) {

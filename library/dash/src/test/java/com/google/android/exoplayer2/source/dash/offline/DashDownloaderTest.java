@@ -305,7 +305,7 @@ public class DashDownloaderTest {
 
   private DashDownloader getDashDownloader(Factory factory, RepresentationKey... keys) {
     return new DashDownloader(
-        TEST_MPD_URI, keysList(keys), new DownloaderConstructorHelper(cache, factory));
+        TEST_MPD_URI, keysList(keys), new DownloaderConstructorHelper(cache, factory), dummy);
   }
 
   private static ArrayList<RepresentationKey> keysList(RepresentationKey... keys) {

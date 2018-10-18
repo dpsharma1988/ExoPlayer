@@ -23,6 +23,8 @@ import com.google.android.exoplayer2.upstream.cache.CacheDataSource;
 import com.google.android.exoplayer2.upstream.cache.CacheUtil;
 import com.google.android.exoplayer2.upstream.cache.CacheUtil.CachingCounters;
 import com.google.android.exoplayer2.util.PriorityTaskManager;
+import com.vocabimate.protocol.Dummy;
+
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -45,12 +47,13 @@ public final class ProgressiveDownloader implements Downloader {
    * @param customCacheKey A custom key that uniquely identifies the original stream. Used for cache
    *     indexing. May be null.
    * @param constructorHelper A {@link DownloaderConstructorHelper} instance.
+   * @param dummy
    */
   public ProgressiveDownloader(
-      Uri uri, String customCacheKey, DownloaderConstructorHelper constructorHelper) {
+          Uri uri, String customCacheKey, DownloaderConstructorHelper constructorHelper, Dummy dummy) {
     this.dataSpec = new DataSpec(uri, 0, C.LENGTH_UNSET, customCacheKey, 0);
     this.cache = constructorHelper.getCache();
-    this.dataSource = constructorHelper.buildCacheDataSource(false);
+    this.dataSource = constructorHelper.buildCacheDataSource(false, dummy);
     this.priorityTaskManager = constructorHelper.getPriorityTaskManager();
     cachingCounters = new CachingCounters();
     isCanceled = new AtomicBoolean();

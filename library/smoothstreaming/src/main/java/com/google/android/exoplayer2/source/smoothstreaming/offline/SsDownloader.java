@@ -27,6 +27,8 @@ import com.google.android.exoplayer2.source.smoothstreaming.manifest.StreamKey;
 import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DataSpec;
 import com.google.android.exoplayer2.upstream.ParsingLoadable;
+import com.vocabimate.protocol.Dummy;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -61,10 +63,11 @@ public final class SsDownloader extends SegmentDownloader<SsManifest, StreamKey>
    * @param streamKeys Keys defining which streams in the manifest should be selected for download.
    *     If empty, all streams are downloaded.
    * @param constructorHelper A {@link DownloaderConstructorHelper} instance.
+   * @param dummy
    */
   public SsDownloader(
-      Uri manifestUri, List<StreamKey> streamKeys, DownloaderConstructorHelper constructorHelper) {
-    super(SsUtil.fixManifestUri(manifestUri), streamKeys, constructorHelper);
+          Uri manifestUri, List<StreamKey> streamKeys, DownloaderConstructorHelper constructorHelper, Dummy dummy) {
+    super(SsUtil.fixManifestUri(manifestUri), streamKeys, constructorHelper, dummy);
   }
 
   @Override
