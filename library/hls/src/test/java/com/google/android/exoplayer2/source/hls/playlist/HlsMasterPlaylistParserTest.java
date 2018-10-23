@@ -200,6 +200,6 @@ public class HlsMasterPlaylistParserTest {
     Uri playlistUri = Uri.parse(uri);
     ByteArrayInputStream inputStream =
         new ByteArrayInputStream(playlistString.getBytes(Charset.forName(C.UTF8_NAME)));
-    return (HlsMasterPlaylist) new HlsPlaylistParser().parse(playlistUri, inputStream);
+    return (HlsMasterPlaylist) new HlsPlaylistParser().parse(null, playlistUri, inputStream);
   }
 }

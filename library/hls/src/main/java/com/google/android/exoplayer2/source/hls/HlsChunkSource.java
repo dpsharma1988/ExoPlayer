@@ -32,10 +32,14 @@ import com.google.android.exoplayer2.trackselection.BaseTrackSelection;
 import com.google.android.exoplayer2.trackselection.TrackSelection;
 import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DataSpec;
+import com.google.android.exoplayer2.upstream.DefaultDataSource;
+import com.google.android.exoplayer2.upstream.cache.CacheDataSource;
+import com.google.android.exoplayer2.upstream.vocabimate_stream.CustomDataSource;
 import com.google.android.exoplayer2.util.TimestampAdjuster;
 import com.google.android.exoplayer2.util.UriUtil;
 import com.google.android.exoplayer2.util.Util;
 import com.vocabimate.protocol.AesEncryptionUtil;
+import com.vocabimate.protocol.ILicenceTo;
 
 import java.io.IOException;
 import java.math.BigInteger;
@@ -383,8 +387,17 @@ import java.util.List;
        * Here it loads the decryption key, which we should have already encrypted using our AesEncryptionUtil, so we need
        * to decrypt it first. See {@Link DefaultHttpDataSource#readInternal() Line: 616} for more details.
        */
-      if(chunk.dataSpec != null && chunk.dataSpec.uri != null && (chunk.dataSpec.uri.toString().contains(".key") || chunk.dataSpec.uri.toString().contains("vcb"))) { // hisham - decrypting key here
-          encryptionKeyChunk.result = AesEncryptionUtil.decrypt("Bar12345Bar12345", "pppppppppppppppp",encryptionKeyChunk.getResult());
+      if(chunk.dataSpec != null && chunk.dataSpec.uri != null && (chunk.dataSpec.uri.toString().contains(".key") || chunk.dataSpec.uri.toString().contains("vcb://"))) { // hisham - decrypting key here
+        if(chunk.dataSource instanceof CacheDataSource){
+          DataSource upstreamDataSource = ((CacheDataSource) chunk.dataSource).getUpstreamDataSource();
+          if(upstreamDataSource instanceof DefaultDataSource) {
+            DataSource baseDataSource = ((DefaultDataSource) upstreamDataSource).getBaseDataSource();
+            if(baseDataSource instanceof CustomDataSource) {
+              ILicenceTo keyHelperModel = ((CustomDataSource) baseDataSource).getKeyHelperModel();
+              encryptionKeyChunk.result = AesEncryptionUtil.decrypt(keyHelperModel.getLocalEncryptionKey(), keyHelperModel.getLocalEncryptionIV(), encryptionKeyChunk.getResult());
+            }
+          }
+        }
       }
 
       scratchSpace = encryptionKeyChunk.getDataHolder();

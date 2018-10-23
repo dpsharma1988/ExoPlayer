@@ -27,6 +27,7 @@ import com.google.android.exoplayer2.drm.DrmInitData.SchemeData;
 import com.google.android.exoplayer2.extractor.mp4.PsshAtomUtil;
 import com.google.android.exoplayer2.source.smoothstreaming.manifest.SsManifest.ProtectionElement;
 import com.google.android.exoplayer2.source.smoothstreaming.manifest.SsManifest.StreamElement;
+import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.ParsingLoadable;
 import com.google.android.exoplayer2.util.Assertions;
 import com.google.android.exoplayer2.util.CodecSpecificDataUtil;
@@ -62,7 +63,7 @@ public class SsManifestParser implements ParsingLoadable.Parser<SsManifest> {
   }
 
   @Override
-  public SsManifest parse(Uri uri, InputStream inputStream) throws IOException {
+  public SsManifest parse(DataSource dataSource, Uri uri, InputStream inputStream) throws IOException {
     try {
       XmlPullParser xmlParser = xmlParserFactory.newPullParser();
       xmlParser.setInput(inputStream, null);

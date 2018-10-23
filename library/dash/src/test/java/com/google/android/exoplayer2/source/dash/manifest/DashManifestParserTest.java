@@ -45,10 +45,10 @@ public class DashManifestParserTest {
   public void testParseMediaPresentationDescription() throws IOException {
     DashManifestParser parser = new DashManifestParser();
     parser.parse(
-        Uri.parse("https://example.com/test.mpd"),
+            null, Uri.parse("https://example.com/test.mpd"),
         TestUtil.getInputStream(RuntimeEnvironment.application, SAMPLE_MPD_1));
     parser.parse(
-        Uri.parse("https://example.com/test.mpd"),
+            null, Uri.parse("https://example.com/test.mpd"),
         TestUtil.getInputStream(RuntimeEnvironment.application, SAMPLE_MPD_2_UNKNOWN_MIME_TYPE));
   }
 
@@ -57,7 +57,7 @@ public class DashManifestParserTest {
     DashManifestParser parser = new DashManifestParser();
     DashManifest mpd =
         parser.parse(
-            Uri.parse("https://example.com/test.mpd"),
+                null, Uri.parse("https://example.com/test.mpd"),
             TestUtil.getInputStream(RuntimeEnvironment.application, SAMPLE_MPD_3_SEGMENT_TEMPLATE));
 
     assertThat(mpd.getPeriodCount()).isEqualTo(1);
@@ -88,7 +88,7 @@ public class DashManifestParserTest {
     DashManifestParser parser = new DashManifestParser();
     DashManifest mpd =
         parser.parse(
-            Uri.parse("https://example.com/test.mpd"),
+                null, Uri.parse("https://example.com/test.mpd"),
             TestUtil.getInputStream(RuntimeEnvironment.application, SAMPLE_MPD_4_EVENT_STREAM));
 
     Period period = mpd.getPeriod(0);

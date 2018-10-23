@@ -16,6 +16,8 @@
 package com.google.android.exoplayer2.offline;
 
 import android.net.Uri;
+
+import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.ParsingLoadable.Parser;
 import java.io.IOException;
 import java.io.InputStream;
@@ -38,8 +40,8 @@ public final class FilteringManifestParser<T extends FilterableManifest<T, K>, K
   }
 
   @Override
-  public T parse(Uri uri, InputStream inputStream) throws IOException {
-    T manifest = parser.parse(uri, inputStream);
+  public T parse(DataSource dataSource, Uri uri, InputStream inputStream) throws IOException {
+    T manifest = parser.parse(dataSource, uri, inputStream);
     return trackKeys == null || trackKeys.isEmpty() ? manifest : manifest.copy(trackKeys);
   }
 }

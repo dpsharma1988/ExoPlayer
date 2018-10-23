@@ -1228,7 +1228,7 @@ public final class DashMediaSource extends BaseMediaSource {
   private static final class XsDateTimeParser implements ParsingLoadable.Parser<Long> {
 
     @Override
-    public Long parse(Uri uri, InputStream inputStream) throws IOException {
+    public Long parse(DataSource dataSource, Uri uri, InputStream inputStream) throws IOException {
       String firstLine = new BufferedReader(new InputStreamReader(inputStream)).readLine();
       return Util.parseXsDateTime(firstLine);
     }
@@ -1241,7 +1241,7 @@ public final class DashMediaSource extends BaseMediaSource {
         Pattern.compile("(.+?)(Z|((\\+|-|−)(\\d\\d)(:?(\\d\\d))?))");
 
     @Override
-    public Long parse(Uri uri, InputStream inputStream) throws IOException {
+    public Long parse(DataSource dataSource, Uri uri, InputStream inputStream) throws IOException {
       String firstLine =
           new BufferedReader(new InputStreamReader(inputStream, Charset.forName(C.UTF8_NAME)))
               .readLine();

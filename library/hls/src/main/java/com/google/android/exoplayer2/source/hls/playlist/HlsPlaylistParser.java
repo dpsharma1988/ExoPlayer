@@ -24,9 +24,15 @@ import com.google.android.exoplayer2.drm.DrmInitData;
 import com.google.android.exoplayer2.drm.DrmInitData.SchemeData;
 import com.google.android.exoplayer2.source.UnrecognizedInputFormatException;
 import com.google.android.exoplayer2.source.hls.playlist.HlsMediaPlaylist.Segment;
+import com.google.android.exoplayer2.upstream.DataSource;
+import com.google.android.exoplayer2.upstream.DefaultDataSource;
 import com.google.android.exoplayer2.upstream.ParsingLoadable;
+import com.google.android.exoplayer2.upstream.cache.CacheDataSource;
+import com.google.android.exoplayer2.upstream.vocabimate_stream.CustomDataSource;
 import com.google.android.exoplayer2.util.MimeTypes;
 import com.google.android.exoplayer2.util.Util;
+import com.vocabimate.protocol.ILicenceTo;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -140,7 +146,7 @@ public final class HlsPlaylistParser implements ParsingLoadable.Parser<HlsPlayli
   private static final Pattern REGEX_FORCED = compileBooleanAttrPattern("FORCED");
 
   @Override
-  public HlsPlaylist parse(Uri uri, InputStream inputStream) throws IOException {
+  public HlsPlaylist parse(DataSource dataSource, Uri uri, InputStream inputStream) throws IOException {
     BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
     Queue<String> extraLines = new ArrayDeque<>();
     String line;
@@ -165,7 +171,7 @@ public final class HlsPlaylistParser implements ParsingLoadable.Parser<HlsPlayli
             || line.equals(TAG_DISCONTINUITY_SEQUENCE)
             || line.equals(TAG_ENDLIST)) {
           extraLines.add(line);
-          return parseMediaPlaylist(new LineIterator(extraLines, reader), uri.toString());
+          return parseMediaPlaylist(dataSource, new LineIterator(extraLines, reader), uri.toString());
         } else {
           extraLines.add(line);
         }
@@ -337,7 +343,7 @@ public final class HlsPlaylistParser implements ParsingLoadable.Parser<HlsPlayli
         | (parseBooleanAttribute(line, REGEX_AUTOSELECT, false) ? C.SELECTION_FLAG_AUTOSELECT : 0);
   }
 
-  private static HlsMediaPlaylist parseMediaPlaylist(LineIterator iterator, String baseUri)
+  private static HlsMediaPlaylist parseMediaPlaylist(DataSource dataSource, LineIterator iterator, String baseUri)
       throws IOException {
     @HlsMediaPlaylist.PlaylistType int playlistType = HlsMediaPlaylist.PLAYLIST_TYPE_UNKNOWN;
     long startOffsetUs = C.TIME_UNSET;
@@ -417,6 +423,16 @@ public final class HlsPlaylistParser implements ParsingLoadable.Parser<HlsPlayli
             if (METHOD_AES_128.equals(method)) {
               // The segment is fully encrypted using an identity key.
               encryptionKeyUri = parseStringAttr(line, REGEX_URI); // hisham - reading the key line in m3u8
+                if(dataSource instanceof CacheDataSource){
+                    DataSource upstreamDataSource = ((CacheDataSource) dataSource).getUpstreamDataSource();
+                    if(upstreamDataSource instanceof DefaultDataSource){
+                        DataSource baseDataSource = ((DefaultDataSource) upstreamDataSource).getBaseDataSource();
+                        if(baseDataSource instanceof CustomDataSource){
+                            ILicenceTo keyHelperModel = ((CustomDataSource) baseDataSource).getKeyHelperModel();
+                            encryptionKeyUri = encryptionKeyUri + keyHelperModel.getUniqueKeyPathForVCB();
+                        }
+                    }
+                }
               //28-09-2018 for custom offline play back
               //it will change in future
 //               if(encryptionKeyUri.contains("vcb://")){
@@ -562,6 +578,10 @@ public final class HlsPlaylistParser implements ParsingLoadable.Parser<HlsPlayli
 //
 //      return "https://vocatest-a40ab.firebaseapp.com/small_files/enc.key";
 //
+//    }
+
+//    if(line != null && line.contains("vcb://")){
+//        line = line.replace("vcb://", "vcb://" + UUID.randomUUID());
 //    }
 
     Matcher matcher = pattern.matcher(line);

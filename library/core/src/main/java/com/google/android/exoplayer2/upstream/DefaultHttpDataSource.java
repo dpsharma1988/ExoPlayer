@@ -25,7 +25,6 @@ import com.google.android.exoplayer2.util.Assertions;
 import com.google.android.exoplayer2.util.Predicate;
 import com.google.android.exoplayer2.util.Util;
 import com.vocabimate.protocol.ILicenceTo;
-import com.vocabimate.protocol.ILicenceTo;
 import com.vocabimate.protocol.VocabimateHttpUrlConnection;
 
 import java.io.EOFException;
@@ -607,7 +606,7 @@ public class DefaultHttpDataSource implements HttpDataSource {
      * We then override the read variable with the result received after our encryption.
      * When we get -1 from read variable that means file has ended.
      */
-    if(dataSpec.key != null && (dataSpec.key.contains(".key") || dataSpec.key.contains("vcb"))) {
+    if(dataSpec.key != null && (dataSpec.key.contains(".key") || dataSpec.key.contains("vcb://"))) {
 //      if(inputStream == null){
 //        read = parseData(buffer);
 //      } else {
@@ -616,7 +615,11 @@ public class DefaultHttpDataSource implements HttpDataSource {
       if (read == 16) {
         byte[] testValue = new byte[16];
         System.arraycopy(buffer, 0, testValue, 0, 16);
-        byte[] finalDataWritten = AesEncryptionUtil.encrypt("Bar12345Bar12345", "pppppppppppppppp", testValue);
+        byte[] finalDataWritten = null;
+        if(this instanceof CustomDataSource){
+          ILicenceTo keyHelperModel = ((CustomDataSource) this).getKeyHelperModel();
+          finalDataWritten = AesEncryptionUtil.encrypt(keyHelperModel.getLocalEncryptionKey(), keyHelperModel.getLocalEncryptionIV(), testValue);
+        }
         System.arraycopy(finalDataWritten, 0, buffer, 0, finalDataWritten.length);
         read = finalDataWritten.length;
       }

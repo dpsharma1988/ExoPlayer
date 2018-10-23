@@ -3,6 +3,18 @@
     "name": "HLS",
     "samples": [
       {
+        "name": "vid5_seg",
+        "uri": "http://54.152.186.92:60801/drm/videoServer/Video/inayat/vid5_seg/playlist.m3u8"
+      },
+      {
+        "name": "vid3_seg",
+        "uri": "http://54.152.186.92:60801/drm/videoServer/Video/inayat/vid3_seg/playlist.m3u8"
+      },
+      {
+        "name": "vid2_seg",
+        "uri": "http://54.152.186.92:60801/drm/videoServer/Video/inayat/vid2_seg/playlist.m3u8"
+      },
+      {
         "name": "UnEncrypted Video",
         "uri": "https://vocatest-a40ab.firebaseapp.com/unencrypted/index.m3u8"
       },

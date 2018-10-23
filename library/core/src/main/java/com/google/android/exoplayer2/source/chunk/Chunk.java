@@ -64,7 +64,8 @@ public abstract class Chunk implements Loadable {
    */
   public final long endTimeUs;
 
-  protected final DataSource dataSource;
+//  protected final DataSource dataSource;
+  public final DataSource dataSource; // Novo - it was protected earliar
 
   /**
    * @param dataSource The source from which the data should be loaded.

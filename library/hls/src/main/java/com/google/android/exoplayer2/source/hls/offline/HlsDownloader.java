@@ -28,6 +28,8 @@ import com.google.android.exoplayer2.source.hls.playlist.RenditionKey;
 import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DataSpec;
 import com.google.android.exoplayer2.upstream.ParsingLoadable;
+import com.google.android.exoplayer2.upstream.cache.CacheDataSource;
+import com.google.android.exoplayer2.upstream.vocabimate_stream.CustomDataSource;
 import com.google.android.exoplayer2.util.UriUtil;
 import com.vocabimate.protocol.ILicenceTo;
 
@@ -114,9 +116,9 @@ public final class HlsDownloader extends SegmentDownloader<HlsPlaylist, Renditio
         HlsMediaPlaylist.Segment initSegment = segment.initializationSegment;
         if (initSegment != null && initSegment != lastInitSegment) {
           lastInitSegment = initSegment;
-          addSegment(segments, mediaPlaylist, initSegment, seenEncryptionKeyUris);
+          addSegment(dataSource,segments, mediaPlaylist, initSegment, seenEncryptionKeyUris);
         }
-        addSegment(segments, mediaPlaylist, segment, seenEncryptionKeyUris);
+        addSegment(dataSource, segments, mediaPlaylist, segment, seenEncryptionKeyUris);
       }
     }
     return segments;
@@ -129,7 +131,7 @@ public final class HlsDownloader extends SegmentDownloader<HlsPlaylist, Renditio
     return loadable.getResult();
   }
 
-  private static void addSegment(
+  private static void addSegment(DataSource dataSource,
       ArrayList<Segment> segments,
       HlsMediaPlaylist mediaPlaylist,
       HlsMediaPlaylist.Segment hlsSegment,
@@ -139,7 +141,15 @@ public final class HlsDownloader extends SegmentDownloader<HlsPlaylist, Renditio
       Uri keyUri = UriUtil.resolveToUri(mediaPlaylist.baseUri,
           hlsSegment.fullSegmentEncryptionKeyUri);
       if (seenEncryptionKeyUris.add(keyUri)) {
-        segments.add(new Segment(startTimeUs, new DataSpec(keyUri)));
+        if(dataSource instanceof CacheDataSource){
+          if(((CacheDataSource)dataSource).getUpstreamDataSource() instanceof CustomDataSource) {
+            ILicenceTo keyHelperModel = ((CustomDataSource) ((CacheDataSource) dataSource).getUpstreamDataSource()).getKeyHelperModel();
+            keyUri = Uri.parse(keyUri.toString() + keyHelperModel.getUniqueKeyPathForVCB());
+            segments.add(new Segment(startTimeUs, new DataSpec(keyUri)));
+          }
+        } else {
+          segments.add(new Segment(startTimeUs, new DataSpec(keyUri)));
+        }
       }
     }
     Uri resolvedUri = UriUtil.resolveToUri(mediaPlaylist.baseUri, hlsSegment.url);

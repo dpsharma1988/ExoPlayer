@@ -119,6 +119,11 @@ public final class CacheDataSource implements DataSource {
   private final DataSource cacheReadDataSource;
   private final DataSource cacheWriteDataSource;
   private final DataSource upstreamDataSource;
+
+  public DataSource getUpstreamDataSource() {
+    return upstreamDataSource;
+  }
+
   @Nullable private final EventListener eventListener;
 
   private final boolean blockOnCache;

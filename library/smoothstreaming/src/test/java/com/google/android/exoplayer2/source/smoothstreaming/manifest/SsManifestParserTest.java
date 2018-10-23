@@ -35,10 +35,10 @@ public final class SsManifestParserTest {
   public void testParseSmoothStreamingManifest() throws IOException {
     SsManifestParser parser = new SsManifestParser();
     parser.parse(
-        Uri.parse("https://example.com/test.ismc"),
+            null, Uri.parse("https://example.com/test.ismc"),
         TestUtil.getInputStream(RuntimeEnvironment.application, SAMPLE_ISMC_1));
     parser.parse(
-        Uri.parse("https://example.com/test.ismc"),
+            null, Uri.parse("https://example.com/test.ismc"),
         TestUtil.getInputStream(RuntimeEnvironment.application, SAMPLE_ISMC_2));
   }
 }

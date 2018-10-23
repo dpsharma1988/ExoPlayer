@@ -22,6 +22,7 @@ import android.content.res.AssetManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Base64;
 import android.util.JsonReader;
 import android.util.Log;
 import android.view.View;
@@ -41,7 +42,9 @@ import com.google.android.exoplayer2.upstream.DataSpec;
 import com.google.android.exoplayer2.upstream.DefaultDataSource;
 import com.google.android.exoplayer2.util.Assertions;
 import com.google.android.exoplayer2.util.Util;
+import com.vocabimate.protocol.AesEncryptionUtil;
 import com.vocabimate.protocol.ILicenceTo;
+import com.vocabimate.protocol.LicenceBody;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -50,6 +53,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Random;
+import java.util.UUID;
 
 /** An activity for selecting from a list of media samples. */
 public class SampleChooserActivity extends Activity
@@ -137,58 +142,58 @@ public class SampleChooserActivity extends Activity
   public boolean onChildClick(ExpandableListView parent, View view, int groupPosition, int childPosition, long id) {
     Sample sample = (Sample) view.getTag();
     Intent intent = sample.buildIntent(this);
+      String localEncKey;
 
-    ILicenceTo keyHelperModel = getKeyHelper(id, (UriSample) sample);
+      String localKeyInString = null; // todo get from DB
+      String localEncIV = null; // todo get from DB
+//
+//      byte[] decodeFileInBytes = android.util.Base64.decode(localKeyInString, Base64.DEFAULT);
+//      byte[] localEncKeyBytes = AesEncryptionUtil.decrypt(masterKey, masterIV, decodeFileInBytes);
+//      localEncKey = new String(localEncKeyBytes);
+
+      localEncKey = "Par12345Bar12345";
+      localEncIV = "dppppppppppppppp";
+
+    ILicenceTo keyHelperModel = getKeyHelper(id, (UriSample) sample, localEncKey, localEncIV);
     intent.putExtra("keyHelperModel", keyHelperModel);
     startActivity(intent);
     return true;
   }
 
-  public ILicenceTo getKeyHelper(long videoId, UriSample sample) {
-//    String key = null;
-//    if(sample.uri.toString().contains("tutorial")){
-//      key = "http://54.152.186.92:60801/drm/static/tutorial/tutorial.key";
-//    } else if(sample.uri.toString().contains("sample")){
-//      key = "http://54.152.186.92:60801/static/sample/enc.key";
-//    }
+  private String TOKEN = "CaoETZZ9-4J-oX8Fy9i8vM8GjZ4PwxvJtwrWzPATx1I=";
 
-//    keyHelperModel.setVideoId(String.valueOf(model.getVideoId()));
-//    keyHelperModel.setM3u8Path(RetroUtils.BASE_URL +"/drm/" + model.getM3u8Url());
-//    keyHelperModel.setToken("l8TmQpaBEdDGCtbefPfzTx54Bt4nOQLgaH8s3edJDhs=");
-//    keyHelperModel.setLicecnceUrl("http://54.152.186.92:60801/drm/get_key_for_a_video/20");
+  public ILicenceTo getKeyHelper(long videoId, UriSample sample, String localEncKey, String localEncIV) {
 
-//    return new KeyHelperModel().setVideoId("videoId: " + videoId)
-//        .setKeyPath(key)
-//        .setM3u8Path(sample.uri.toString());
-//
-//    if(sample.uri.toString().contains("http://54.152.186.92:60801/drm/videoServer/Video/inayat/vid3_seg/playlist.m3u8")) {
-      return new LicenceBody(32, 18, "N",
+//      While Playing
+
+    if(sample.uri.toString().contains("vid5_seg")) {
+      return new LicenceBody(75, 20, "N",
+              "http://54.152.186.92:60801/drm/videoServer/Video/inayat/vid5_seg/playlist.m3u8",
+              TOKEN,
+              "http://54.152.186.92:60801/license/create_license", localEncKey, localEncIV
+      );
+    }
+
+    if(sample.uri.toString().contains("vid3_seg"))
+      return new LicenceBody(75, 18, "N",
               "http://54.152.186.92:60801/drm/videoServer/Video/inayat/vid3_seg/playlist.m3u8",
-              "PROCsVCsQpw8RNBq8YwuZnOrULeREGlW3G9PZukrZmU=",
-              "http://54.152.186.92:60801/license/create_license"
-              );
-//      .setVideoId("videoId: " + videoId)
-//              .setM3u8Path("http://54.152.186.92:60801/drm/videoServer/Video/inayat/vid3_seg/playlist.m3u8")
-//              .setLicecnceUrl("http://54.152.186.92:60801/license/create_license")
-//              .setToken("PROCsVCsQpw8RNBq8YwuZnOrULeREGlW3G9PZukrZmU=")
-//              .setLicenceTo(licenceBody);
-//    }
-//    return null;
+              TOKEN,
+              "http://54.152.186.92:60801/license/create_license", localEncKey, localEncIV
+      );
 
-//    if(sample.uri.toString().contains("vid30")) {
-//      return new KeyHelperModel().setVideoId("videoId: " + videoId)
-//              .setM3u8Path("https://voca2hosting.firebaseapp.com/vid30/playlist.m3u8")
-//              .setLicecnceUrl("https://voca2hosting.firebaseapp.com/vid30/licence")
-//              .setToken("rmaC0c9VqdoDDCku3MsXLJw_LL2IM_62zw8lOwfJsLU=");
-//    }
-//
-//
-//
-//    return new KeyHelperModel().setVideoId("videoId: " + videoId)
-//        .setM3u8Path("http://54.152.186.92:60801/drm/static/video/inayat/sample_category/vid5/playlist.m3u8")
-//        .setLicecnceUrl("http://54.152.186.92:60801/drm/get_key_for_a_video/20")
-//        .setToken("l8TmQpaBEdDGCtbefPfzTx54Bt4nOQLgaH8s3edJDhs=");
+
+
+    if(sample.uri.toString().contains("vid2_seg"))
+      return new LicenceBody(75, 1, "N",
+              "http://54.152.186.92:60801/drm/videoServer/Video/inayat/vid2_seg/playlist.m3u8",
+              TOKEN,
+              "http://54.152.186.92:60801/license/create_license", localEncKey, localEncIV
+      );
+
+    return null;
   }
+    String masterKey = "Bar12345Bar12345";
+    String masterIV = "pppppppppppppppp";
 
   private void onSampleDownloadButtonClicked(Sample sample) {
     int downloadUnsupportedStringId = getDownloadUnsupportedStringId(sample);
@@ -197,7 +202,22 @@ public class SampleChooserActivity extends Activity
           .show();
     } else {
       UriSample uriSample = (UriSample) sample;
-      ILicenceTo keyHelper = getKeyHelper(5, uriSample);
+
+
+        String localEncKey = UUID.randomUUID().toString().substring(0, 16);
+        String localEncIV = UUID.randomUUID().toString().substring(0, 16);
+      byte[] b = new byte[20];
+      new Random().nextBytes(b);
+
+        byte[] encrypt = AesEncryptionUtil.encrypt(masterKey, masterIV, localEncKey.getBytes());
+        String localKeyInString = new String(android.util.Base64.encode(encrypt, Base64.DEFAULT));
+
+//        // todo --> Save fileInString, IV into Database;
+
+        localEncKey = "Par12345Bar12345";
+        localEncIV = "dppppppppppppppp";
+
+      ILicenceTo keyHelper = getKeyHelper(5, uriSample, localEncKey, localEncIV);
       downloadTracker = ((DemoApplication)getApplication()).getDownloadTracker(keyHelper);
       downloadTracker.toggleDownload(this, sample.name, uriSample.uri, uriSample.extension, keyHelper);
     }

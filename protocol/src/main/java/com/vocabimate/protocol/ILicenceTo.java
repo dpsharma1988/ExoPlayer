@@ -11,4 +11,7 @@ public interface ILicenceTo extends Serializable {
     String getToken();
     String getLicenceUrl();
     String getM3U8Path();
+    String getUniqueKeyPathForVCB(); // Every Key must have a unique path, otherwise keys may get replaced or 2nd key with same path dont download
+    String getLocalEncryptionKey();
+    String getLocalEncryptionIV();
 }

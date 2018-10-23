@@ -1,4 +1,4 @@
-package com.google.android.exoplayer2.demo;
+package com.vocabimate.protocol;
 
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
@@ -14,8 +14,8 @@ public class LicenceBody extends KeyHelper implements Serializable {
     @SerializedName("licenseTO")
     private LicenceBodyInternal licenceBodyInternal;
 
-    public LicenceBody(int userId, int videoId, String delInd, String m3u8Path, String token, String licenceUrl) {
-        super(m3u8Path, token, licenceUrl);
+    public LicenceBody(int userId, int videoId, String delInd, String m3u8Path, String token, String licenceUrl, String localEncryptionKey, String localEncryptionIV) {
+        super(m3u8Path, token, licenceUrl, localEncryptionKey, localEncryptionIV);
         licenceBodyInternal = new LicenceBodyInternal(userId, videoId, delInd);
     }
 
@@ -27,6 +27,15 @@ public class LicenceBody extends KeyHelper implements Serializable {
     @Override
     public String getType() {
         return "POST";
+    }
+
+
+    /**
+     * @return Unique key path for every video  ex: vcb://{videoId} - vcb://18 or vcb://360p.m3u8/18
+     */
+    @Override
+    public String getUniqueKeyPathForVCB() {
+        return String.valueOf(licenceBodyInternal.videoId);
     }
 
 

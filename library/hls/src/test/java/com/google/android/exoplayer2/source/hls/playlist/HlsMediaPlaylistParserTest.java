@@ -73,7 +73,7 @@ public class HlsMediaPlaylistParserTest {
             + "#EXT-X-ENDLIST";
     InputStream inputStream =
         new ByteArrayInputStream(playlistString.getBytes(Charset.forName(C.UTF8_NAME)));
-    HlsPlaylist playlist = new HlsPlaylistParser().parse(playlistUri, inputStream);
+    HlsPlaylist playlist = new HlsPlaylistParser().parse(null, playlistUri, inputStream);
 
     HlsMediaPlaylist mediaPlaylist = (HlsMediaPlaylist) playlist;
     assertThat(mediaPlaylist.playlistType).isEqualTo(HlsMediaPlaylist.PLAYLIST_TYPE_VOD);
@@ -159,7 +159,7 @@ public class HlsMediaPlaylistParserTest {
     InputStream inputStream =
         new ByteArrayInputStream(playlistString.getBytes(Charset.forName(C.UTF8_NAME)));
     HlsMediaPlaylist playlist =
-        (HlsMediaPlaylist) new HlsPlaylistParser().parse(playlistUri, inputStream);
+        (HlsMediaPlaylist) new HlsPlaylistParser().parse(null, playlistUri, inputStream);
     assertThat(playlist.drmInitData.schemeType).isEqualTo(C.CENC_TYPE_cbcs);
     assertThat(playlist.drmInitData.get(0).matches(C.WIDEVINE_UUID)).isTrue();
   }
@@ -183,7 +183,7 @@ public class HlsMediaPlaylistParserTest {
     InputStream inputStream =
         new ByteArrayInputStream(playlistString.getBytes(Charset.forName(C.UTF8_NAME)));
     HlsMediaPlaylist playlist =
-        (HlsMediaPlaylist) new HlsPlaylistParser().parse(playlistUri, inputStream);
+        (HlsMediaPlaylist) new HlsPlaylistParser().parse(null, playlistUri, inputStream);
     assertThat(playlist.drmInitData.schemeType).isEqualTo(C.CENC_TYPE_cenc);
     assertThat(playlist.drmInitData.get(0).matches(C.WIDEVINE_UUID)).isTrue();
   }
@@ -207,7 +207,7 @@ public class HlsMediaPlaylistParserTest {
     InputStream inputStream =
         new ByteArrayInputStream(playlistString.getBytes(Charset.forName(C.UTF8_NAME)));
     HlsMediaPlaylist playlist =
-        (HlsMediaPlaylist) new HlsPlaylistParser().parse(playlistUri, inputStream);
+        (HlsMediaPlaylist) new HlsPlaylistParser().parse(null, playlistUri, inputStream);
     assertThat(playlist.drmInitData.schemeType).isEqualTo(C.CENC_TYPE_cenc);
     assertThat(playlist.drmInitData.get(0).matches(C.WIDEVINE_UUID)).isTrue();
   }
@@ -240,7 +240,7 @@ public class HlsMediaPlaylistParserTest {
     InputStream inputStream =
         new ByteArrayInputStream(playlistString.getBytes(Charset.forName(C.UTF8_NAME)));
     HlsMediaPlaylist playlist =
-        (HlsMediaPlaylist) new HlsPlaylistParser().parse(playlistUri, inputStream);
+        (HlsMediaPlaylist) new HlsPlaylistParser().parse(null, playlistUri, inputStream);
 
     assertThat(playlist.hasEndTag).isFalse();
     assertThat(playlist.segments.get(1).hasGapTag).isFalse();
@@ -269,7 +269,7 @@ public class HlsMediaPlaylistParserTest {
     InputStream inputStream =
         new ByteArrayInputStream(playlistString.getBytes(Charset.forName(C.UTF8_NAME)));
     HlsMediaPlaylist playlist =
-        (HlsMediaPlaylist) new HlsPlaylistParser().parse(playlistUri, inputStream);
+        (HlsMediaPlaylist) new HlsPlaylistParser().parse(null, playlistUri, inputStream);
 
     List<Segment> segments = playlist.segments;
     assertThat(segments.get(0).initializationSegment).isNull();

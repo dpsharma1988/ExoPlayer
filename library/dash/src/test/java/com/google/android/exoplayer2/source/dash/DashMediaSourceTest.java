@@ -70,7 +70,7 @@ public final class DashMediaSourceTest {
 
   private static void assertParseStringToLong(
       long expected, ParsingLoadable.Parser<Long> parser, String data) throws IOException {
-    long actual = parser.parse(null, new ByteArrayInputStream(Util.getUtf8Bytes(data)));
+    long actual = parser.parse(null, null, new ByteArrayInputStream(Util.getUtf8Bytes(data)));
     assertThat(actual).isEqualTo(expected);
   }
 }

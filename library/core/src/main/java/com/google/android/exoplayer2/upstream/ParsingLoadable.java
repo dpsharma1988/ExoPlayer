@@ -38,13 +38,15 @@ public final class ParsingLoadable<T> implements Loadable {
     /**
      * Parses an object from a response.
      *
+     *
+     * @param dataSource
      * @param uri The source {@link Uri} of the response, after any redirection.
      * @param inputStream An {@link InputStream} from which the response data can be read.
      * @return The parsed object.
      * @throws ParserException If an error occurs parsing the data.
      * @throws IOException If an error occurs reading data from the stream.
      */
-    T parse(Uri uri, InputStream inputStream) throws IOException;
+    T parse(DataSource dataSource, Uri uri, InputStream inputStream) throws IOException;
 
   }
 
@@ -135,7 +137,7 @@ public final class ParsingLoadable<T> implements Loadable {
     DataSourceInputStream inputStream = new DataSourceInputStream(dataSource, dataSpec);
     try {
       inputStream.open();
-      result = parser.parse(dataSource.getUri(), inputStream);
+      result = parser.parse(dataSource, dataSource.getUri(), inputStream);
     } finally {
       bytesLoaded = inputStream.bytesRead();
       Util.closeQuietly(inputStream);

@@ -32,6 +32,7 @@ import com.google.android.exoplayer2.source.dash.manifest.SegmentBase.SegmentLis
 import com.google.android.exoplayer2.source.dash.manifest.SegmentBase.SegmentTemplate;
 import com.google.android.exoplayer2.source.dash.manifest.SegmentBase.SegmentTimelineElement;
 import com.google.android.exoplayer2.source.dash.manifest.SegmentBase.SingleSegmentBase;
+import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.ParsingLoadable;
 import com.google.android.exoplayer2.util.Assertions;
 import com.google.android.exoplayer2.util.MimeTypes;
@@ -91,7 +92,7 @@ public class DashManifestParser extends DefaultHandler
   // MPD parsing.
 
   @Override
-  public DashManifest parse(Uri uri, InputStream inputStream) throws IOException {
+  public DashManifest parse(DataSource dataSource, Uri uri, InputStream inputStream) throws IOException {
     try {
       XmlPullParser xpp = xmlParserFactory.newPullParser();
       xpp.setInput(inputStream, null);

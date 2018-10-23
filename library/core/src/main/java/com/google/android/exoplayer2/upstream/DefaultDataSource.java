@@ -57,6 +57,10 @@ public final class DefaultDataSource implements DataSource {
 
   private final DataSource baseDataSource;
 
+  public DataSource getBaseDataSource() {
+    return baseDataSource;
+  }
+
   // Lazily initialized.
   private DataSource fileDataSource;
   private DataSource assetDataSource;
