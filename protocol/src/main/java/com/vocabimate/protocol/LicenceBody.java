@@ -2,7 +2,6 @@ package com.vocabimate.protocol;
 
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
-import com.vocabimate.protocol.KeyHelper;
 
 import java.io.Serializable;
 
@@ -25,19 +24,25 @@ public class LicenceBody extends KeyHelper implements Serializable {
     }
 
     @Override
-    public String getType() {
+    public String getRequestType() {
         return "POST";
     }
 
+    public int getVideoId() {
+        return licenceBodyInternal.videoId;
+    }
+
+    public int getUserId() {
+        return licenceBodyInternal.userId;
+    }
 
     /**
-     * @return Unique key path for every video  ex: vcb://{videoId} - vcb://18 or vcb://360p.m3u8/18
+     * @return Unique key path to append for every video  ex: vcb://{videoId} that will become- vcb://18 or vcb://360p.m3u8/18, just it should be unique
      */
     @Override
     public String getUniqueKeyPathForVCB() {
         return String.valueOf(licenceBodyInternal.videoId);
     }
-
 
     private class LicenceBodyInternal implements Serializable {
         @SerializedName("userId")
@@ -47,7 +52,7 @@ public class LicenceBody extends KeyHelper implements Serializable {
         @SerializedName("delInd")
         String delInd;
 
-        public LicenceBodyInternal(int userId, int videoId, String delInd) {
+        /* package */ LicenceBodyInternal(int userId, int videoId, String delInd) {
             this.userId = userId;
             this.videoId = videoId;
             this.delInd = delInd;

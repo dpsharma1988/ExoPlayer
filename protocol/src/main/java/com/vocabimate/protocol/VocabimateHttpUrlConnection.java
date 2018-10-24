@@ -46,19 +46,21 @@ public class VocabimateHttpUrlConnection extends HttpURLConnection {
 //        }
         URL url = new URL(licence_url);
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-        if(licence.getType() == null) {
+        String requestType = licence.getRequestType();
+        if(requestType == null) {
             connection.setRequestMethod("POST"); // default
         } else {
-            connection.setRequestMethod(licence.getType());
+            connection.setRequestMethod(requestType);
         }
         connection.setDoInput(true);
         connection.setDoOutput(true);
         connection.setRequestProperty("access_token", token);
         connection.setRequestProperty("Content-Type", "application/json");
 
-        if(licence.jsonBody() != null) {
+        String requestBody = licence.jsonBody();
+        if(requestBody != null) {
             OutputStreamWriter wr = new OutputStreamWriter(connection.getOutputStream());
-            wr.write(licence.jsonBody());
+            wr.write(requestBody);
             wr.flush();
         }
 
