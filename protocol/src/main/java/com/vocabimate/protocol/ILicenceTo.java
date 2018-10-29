@@ -8,7 +8,7 @@ import java.io.Serializable;
 public interface ILicenceTo extends Serializable {
     String jsonBody();
     /**
-     * @return Retrun request type, GET, POST etc.
+     * @return request type, GET, POST etc.
      */
     String getRequestType();
     String getToken();
@@ -16,4 +16,8 @@ public interface ILicenceTo extends Serializable {
     String getUniqueKeyPathForVCB(); // Every Key must have a unique path, otherwise keys may get replaced or 2nd key with same path may not download
     String getLocalEncryptionKey();
     String getLocalEncryptionIV();
+    // this could be null
+    ILicenceContract getLicence();
+
+    Class<? extends ILicenceWrapperContract> getLicenceResponseModelClass();
 }

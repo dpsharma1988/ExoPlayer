@@ -78,6 +78,11 @@ public final class ImaAdsLoader extends Player.DefaultEventListener implements A
     ExoPlayerLibraryInfo.registerModule("goog.exo.ima");
   }
 
+  @Override
+  public int getVolume() {
+    return 0;
+  }
+
   /** Builder for {@link ImaAdsLoader}. */
   public static final class Builder {
 

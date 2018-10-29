@@ -17,7 +17,7 @@ import java.net.URL;
 public class VocabimateHttpUrlConnection extends HttpURLConnection {
 
     protected VocAbsInputStream vocAbsInputStream;
-    private ILicenceTo licence;
+    private ILicenceTo licenceTo;
 
     /**
      * @see com.vocabimate.protocol.VocabimateInputStream VocabimateInputStream
@@ -35,9 +35,9 @@ public class VocabimateHttpUrlConnection extends HttpURLConnection {
     @Override
     public void connect() throws IOException {
 
-        // todo Need to fix things here, not getting token and licence url on older phones.
-        String licence_url = licence.getLicenceUrl();//getRequestProperty("licence_url");
-        String token = licence.getToken();//getRequestProperty("access_token");
+        // todo Need to fix things here, not getting token and licenceTo url on older phones.
+        String licence_url = licenceTo.getLicenceUrl();//getRequestProperty("licence_url");
+        String token = licenceTo.getToken();//getRequestProperty("access_token");
 //        if (licence_url == null) {
 //            throw new Error("Licence url is not provided in header, please set 'licence_url' just like access_token");
 //        }
@@ -46,7 +46,7 @@ public class VocabimateHttpUrlConnection extends HttpURLConnection {
 //        }
         URL url = new URL(licence_url);
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-        String requestType = licence.getRequestType();
+        String requestType = licenceTo.getRequestType();
         if(requestType == null) {
             connection.setRequestMethod("POST"); // default
         } else {
@@ -57,7 +57,7 @@ public class VocabimateHttpUrlConnection extends HttpURLConnection {
         connection.setRequestProperty("access_token", token);
         connection.setRequestProperty("Content-Type", "application/json");
 
-        String requestBody = licence.jsonBody();
+        String requestBody = licenceTo.jsonBody();
         if(requestBody != null) {
             OutputStreamWriter wr = new OutputStreamWriter(connection.getOutputStream());
             wr.write(requestBody);
@@ -66,16 +66,22 @@ public class VocabimateHttpUrlConnection extends HttpURLConnection {
 
         if (token != null) {
             String result = readStream(connection.getInputStream());
-            LicenceModel licenceModel = new Gson().fromJson(result, LicenceModel.class);
-            InputStream stream = null;
-            if (licenceModel != null && licenceModel.getLicenseFile() != null && licenceModel.getLicenseFile().getDecryptionKey() != null) {
-                TokenDecryptionHelper tokenDecryptionHelper = new TokenDecryptionHelper(token, licenceModel.getLicenseFile().getDecryptionKey());
-                byte[] decrypt = tokenDecryptionHelper.decrypt();
-                stream = new ByteArrayInputStream(decrypt);
+            ILicenceWrapperContract licenceWrapper = new Gson().fromJson(result, licenceTo.getLicenceResponseModelClass());
+            InputStream stream;
+            if (licenceWrapper != null) {
+                ILicenceContract licenseFile = licenceWrapper.getLicenseFile();
+                if(licenceTo instanceof KeyHelper) {
+                    ((KeyHelper)licenceTo).setLicence(licenseFile);
+                }
+                if(licenseFile != null && licenseFile.getDecryptionKey() != null) {
+                    TokenDecryptionHelper tokenDecryptionHelper = new TokenDecryptionHelper(token, licenseFile.getDecryptionKey());
+                    byte[] decrypt = tokenDecryptionHelper.decrypt();
+                    stream = new ByteArrayInputStream(decrypt);
 //            for (int i = 0; i < decrypt.length; i++) {
 //                buffer[i] = decrypt[i];
 //            }
-                vocAbsInputStream.setInputStream(stream);
+                    vocAbsInputStream.setInputStream(stream);
+                }
             }
         }
         connected = true;
@@ -134,6 +140,6 @@ public class VocabimateHttpUrlConnection extends HttpURLConnection {
     }
 
     public void setKeyHelper(ILicenceTo licence) {
-        this.licence = licence;
+        this.licenceTo = licence;
     }
 }

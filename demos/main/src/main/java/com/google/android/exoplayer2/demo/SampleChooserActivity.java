@@ -44,7 +44,7 @@ import com.google.android.exoplayer2.util.Assertions;
 import com.google.android.exoplayer2.util.Util;
 import com.vocabimate.protocol.AesEncryptionUtil;
 import com.vocabimate.protocol.ILicenceTo;
-import com.vocabimate.protocol.LicenceBody;
+import com.vocabimate.helpers.LicenceBody;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -160,7 +160,7 @@ public class SampleChooserActivity extends Activity
     return true;
   }
 
-  private String TOKEN = "CaoETZZ9-4J-oX8Fy9i8vM8GjZ4PwxvJtwrWzPATx1I=";
+  private String TOKEN = "U-4wnaHOaltwOcS_Lc9QdL_ODXCC_qEZrvIglm7JFSA=";
 
   public ILicenceTo getKeyHelper(long videoId, UriSample sample, String localEncKey, String localEncIV) {
 

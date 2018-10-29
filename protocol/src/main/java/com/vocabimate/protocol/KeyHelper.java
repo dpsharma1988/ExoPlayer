@@ -12,13 +12,23 @@ public abstract class KeyHelper implements Serializable, ILicenceTo {
     private String licenceUrl;
     private String localEncryptionKey;
     private String localEncryptionIV;
+    private ILicenceContract licenceContract;
 
-    public KeyHelper(String m3u8Path, String token, String licenceUrl, String localEncryptionKey, String localEncryptionIV) {
+    protected KeyHelper(String m3u8Path, String token, String licenceUrl, String localEncryptionKey, String localEncryptionIV) {
         this.m3u8Path = m3u8Path;
         this.token = token;
         this.licenceUrl = licenceUrl;
         this.localEncryptionKey = localEncryptionKey;
         this.localEncryptionIV = localEncryptionIV;
+    }
+
+    /*package*/ void setLicence(ILicenceContract licence) {
+        this.licenceContract = licence;
+    }
+
+    @Override
+    public ILicenceContract getLicence() {
+        return this.licenceContract;
     }
 
     @Override

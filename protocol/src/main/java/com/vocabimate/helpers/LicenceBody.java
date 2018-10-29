@@ -1,7 +1,9 @@
-package com.vocabimate.protocol;
+package com.vocabimate.helpers;
 
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
+import com.vocabimate.protocol.ILicenceWrapperContract;
+import com.vocabimate.protocol.KeyHelper;
 
 import java.io.Serializable;
 
@@ -42,6 +44,11 @@ public class LicenceBody extends KeyHelper implements Serializable {
     @Override
     public String getUniqueKeyPathForVCB() {
         return String.valueOf(licenceBodyInternal.videoId);
+    }
+
+    @Override
+    public Class<? extends ILicenceWrapperContract> getLicenceResponseModelClass() {
+        return LicenceModel.class;
     }
 
     private class LicenceBodyInternal implements Serializable {
