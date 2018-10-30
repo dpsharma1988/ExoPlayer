@@ -811,7 +811,7 @@ public final class DownloadManager {
       try {
         downloader = action.createDownloader(downloadManager.downloaderConstructorHelper, action.mKeyHelper);
         if (action.isRemoveAction) {
-          downloader.remove();
+          downloader.remove(action.mKeyHelper);
         } else {
           int errorCount = 0;
           long errorPosition = C.LENGTH_UNSET;

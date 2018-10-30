@@ -97,7 +97,7 @@ public final class ProgressiveDownloader implements Downloader {
   }
 
   @Override
-  public void remove() {
+  public void remove(ILicenceTo mKeyHelper) {
     CacheUtil.remove(cache, CacheUtil.getKey(dataSpec));
   }
 }

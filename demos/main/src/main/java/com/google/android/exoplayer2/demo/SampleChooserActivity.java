@@ -160,7 +160,7 @@ public class SampleChooserActivity extends Activity
     return true;
   }
 
-  private String TOKEN = "U-4wnaHOaltwOcS_Lc9QdL_ODXCC_qEZrvIglm7JFSA=";
+  private String TOKEN = "YHd7d3dxfTXpAAPA7Hf00hpNPktVZcf1ZlSR4OVTIQQ=";
 
   public ILicenceTo getKeyHelper(long videoId, UriSample sample, String localEncKey, String localEncIV) {
 

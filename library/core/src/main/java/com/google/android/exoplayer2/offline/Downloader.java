@@ -16,6 +16,8 @@
 package com.google.android.exoplayer2.offline;
 
 import com.google.android.exoplayer2.C;
+import com.vocabimate.protocol.ILicenceTo;
+
 import java.io.IOException;
 
 /**
@@ -48,6 +50,7 @@ public interface Downloader {
    * Removes the media.
    *
    * @throws InterruptedException Thrown if the thread was interrupted.
+   * @param mKeyHelper
    */
-  void remove() throws InterruptedException;
+  void remove(ILicenceTo mKeyHelper) throws InterruptedException;
 }

@@ -193,10 +193,11 @@ public abstract class SegmentDownloader<M extends FilterableManifest<M, K>, K>
   }
 
   @Override
-  public final void remove() throws InterruptedException {
+  public final void remove(ILicenceTo mKeyHelper) throws InterruptedException {
     try {
       M manifest = getManifest(offlineDataSource, manifestUri);
       List<Segment> segments = getSegments(offlineDataSource, manifest, true);
+      segments.add(new Segment(0, new DataSpec(Uri.parse("vcb://" + mKeyHelper.getVideoId()))));
       for (int i = 0; i < segments.size(); i++) {
         removeUri(segments.get(i).dataSpec.uri);
       }
