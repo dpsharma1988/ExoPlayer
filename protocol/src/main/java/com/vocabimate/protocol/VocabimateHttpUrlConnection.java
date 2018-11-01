@@ -35,7 +35,6 @@ public class VocabimateHttpUrlConnection extends HttpURLConnection {
     @Override
     public void connect() throws IOException {
 
-        // todo Need to fix things here, not getting token and licenceTo url on older phones.
         String licence_url = licenceTo.getLicenceUrl();//getRequestProperty("licence_url");
         String token = licenceTo.getToken();//getRequestProperty("access_token");
 //        if (licence_url == null) {
@@ -70,16 +69,18 @@ public class VocabimateHttpUrlConnection extends HttpURLConnection {
             InputStream stream;
             if (licenceWrapper != null) {
                 ILicenceContract licenseFile = licenceWrapper.getLicenseFile();
+                if(licenseFile == null){
+                    connected = false;
+                    responseCode = 500;
+                    return;
+                }
                 if(licenceTo instanceof KeyHelper) {
                     ((KeyHelper)licenceTo).setLicence(licenseFile);
                 }
-                if(licenseFile != null && licenseFile.getDecryptionKey() != null) {
+                if(licenseFile.getDecryptionKey() != null) {
                     TokenDecryptionHelper tokenDecryptionHelper = new TokenDecryptionHelper(token, licenseFile.getDecryptionKey());
                     byte[] decrypt = tokenDecryptionHelper.decrypt();
                     stream = new ByteArrayInputStream(decrypt);
-//            for (int i = 0; i < decrypt.length; i++) {
-//                buffer[i] = decrypt[i];
-//            }
                     vocAbsInputStream.setInputStream(stream);
                 }
             }
@@ -98,7 +99,7 @@ public class VocabimateHttpUrlConnection extends HttpURLConnection {
         StringBuffer response = new StringBuffer();
         try {
             reader = new BufferedReader(new InputStreamReader(in));
-            String line = "";
+            String line;
             while ((line = reader.readLine()) != null) {
                 response.append(line);
             }

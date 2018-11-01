@@ -1,4 +1,4 @@
-package com.vocabimate.helpers;
+package com.google.android.exoplayer2.demo.helpers;
 
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
@@ -13,45 +13,45 @@ import java.io.Serializable;
 public class LicenceBody extends KeyHelper implements Serializable {
 
     @SerializedName("licenseTO")
-    private LicenceBodyInternal licenceBodyInternal;
+    private LicenceBody.LicenceBodyInternal licenceBodyInternal;
+    private String videoName;
 
-    public LicenceBody(int userId, int videoId, String delInd, String m3u8Path, String token, String licenceUrl, String localEncryptionKey, String localEncryptionIV) {
+    public LicenceBody(String videoName, int userId, int videoId, String delInd, String m3u8Path, String token, String licenceUrl, String localEncryptionKey, String localEncryptionIV) {
         super(m3u8Path, token, licenceUrl, localEncryptionKey, localEncryptionIV);
-        licenceBodyInternal = new LicenceBodyInternal(userId, videoId, delInd);
+        this.licenceBodyInternal = new LicenceBody.LicenceBodyInternal(userId, videoId, delInd);
+        this.videoName = videoName;
     }
 
-    @Override
+    public String getVideoName() {
+        return videoName;
+    }
+
+
     public String jsonBody() {
-        return new Gson().toJson(this);
+        return (new Gson()).toJson(this);
     }
 
-    @Override
     public String getRequestType() {
         return "POST";
     }
 
     public int getVideoId() {
-        return licenceBodyInternal.videoId;
+        return this.licenceBodyInternal.videoId;
     }
 
     public int getUserId() {
-        return licenceBodyInternal.userId;
+        return this.licenceBodyInternal.userId;
     }
 
-    /**
-     * @return Unique key path to append for every video  ex: vcb://{videoId} that will become- vcb://18 or vcb://360p.m3u8/18, just it should be unique
-     */
-    @Override
     public String getUniqueKeyPathForVCB() {
-        return String.valueOf(licenceBodyInternal.videoId);
+        return String.valueOf(this.licenceBodyInternal.videoId);
     }
 
-    @Override
     public Class<? extends ILicenceWrapperContract> getLicenceResponseModelClass() {
         return LicenceModel.class;
     }
 
-    private class LicenceBodyInternal implements Serializable {
+    public class LicenceBodyInternal implements Serializable {
         @SerializedName("userId")
         int userId;
         @SerializedName("videoId")
@@ -59,7 +59,7 @@ public class LicenceBody extends KeyHelper implements Serializable {
         @SerializedName("delInd")
         String delInd;
 
-        /* package */ LicenceBodyInternal(int userId, int videoId, String delInd) {
+        LicenceBodyInternal(int userId, int videoId, String delInd) {
             this.userId = userId;
             this.videoId = videoId;
             this.delInd = delInd;

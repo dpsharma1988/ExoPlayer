@@ -44,7 +44,7 @@ import com.google.android.exoplayer2.util.Assertions;
 import com.google.android.exoplayer2.util.Util;
 import com.vocabimate.protocol.AesEncryptionUtil;
 import com.vocabimate.protocol.ILicenceTo;
-import com.vocabimate.helpers.LicenceBody;
+import com.google.android.exoplayer2.demo.helpers.LicenceBody;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -167,7 +167,7 @@ public class SampleChooserActivity extends Activity
 //      While Playing
 
     if(sample.uri.toString().contains("vid5_seg")) {
-      return new LicenceBody(75, 20, "N",
+      return new LicenceBody("vid5_seg", 75, 20, "N",
               "http://54.152.186.92:60801/drm/videoServer/Video/inayat/vid5_seg/playlist.m3u8",
               TOKEN,
               "http://54.152.186.92:60801/license/create_license", localEncKey, localEncIV
@@ -175,7 +175,7 @@ public class SampleChooserActivity extends Activity
     }
 
     if(sample.uri.toString().contains("vid3_seg"))
-      return new LicenceBody(75, 18, "N",
+      return new LicenceBody("vid3_seg", 75, 18, "N",
               "http://54.152.186.92:60801/drm/videoServer/Video/inayat/vid3_seg/playlist.m3u8",
               TOKEN,
               "http://54.152.186.92:60801/license/create_license", localEncKey, localEncIV
@@ -184,7 +184,7 @@ public class SampleChooserActivity extends Activity
 
 
     if(sample.uri.toString().contains("vid2_seg"))
-      return new LicenceBody(75, 1, "N",
+      return new LicenceBody("vid2_seg", 75, 1, "N",
               "http://54.152.186.92:60801/drm/videoServer/Video/inayat/vid2_seg/playlist.m3u8",
               TOKEN,
               "http://54.152.186.92:60801/license/create_license", localEncKey, localEncIV
