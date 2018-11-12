@@ -68,21 +68,20 @@ public class VocabimateHttpUrlConnection extends HttpURLConnection {
             ILicenceWrapperContract licenceWrapper = new Gson().fromJson(result, licenceTo.getLicenceResponseModelClass());
             InputStream stream;
             if (licenceWrapper != null) {
-                ILicenceContract licenseFile = licenceWrapper.getLicenseFile();
-                if(licenseFile == null){
-                    connected = false;
-                    responseCode = 500;
-                    return;
-                }
                 if(licenceTo instanceof KeyHelper) {
-                    ((KeyHelper)licenceTo).setLicence(licenseFile);
+                    ((KeyHelper)licenceTo).setLicenceWrapperContract(licenceWrapper);
                 }
-                if(licenseFile.getDecryptionKey() != null) {
+                ILicenceContract licenseFile = licenceWrapper.getLicenseFile();
+                if(licenseFile != null && licenseFile.getDecryptionKey() != null) {
                     TokenDecryptionHelper tokenDecryptionHelper = new TokenDecryptionHelper(token, licenseFile.getDecryptionKey());
                     byte[] decrypt = tokenDecryptionHelper.decrypt();
                     stream = new ByteArrayInputStream(decrypt);
                     vocAbsInputStream.setInputStream(stream);
                 }
+            } else {
+                connected = false;
+                responseCode = 500;
+                return;
             }
         }
         connected = true;

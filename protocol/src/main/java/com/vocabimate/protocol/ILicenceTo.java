@@ -17,7 +17,7 @@ public interface ILicenceTo extends Serializable {
     String getLocalEncryptionKey();
     String getLocalEncryptionIV();
     // this could be null
-    ILicenceContract getLicence();
+    ILicenceWrapperContract getLicenceWrapperContract();
     int getVideoId();
     Class<? extends ILicenceWrapperContract> getLicenceResponseModelClass();
 
